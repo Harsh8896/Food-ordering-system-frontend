@@ -1,0 +1,70 @@
+.food-card{
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.food-card:hover{
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.food-img-wrapper{
+    height: 220px;
+    overflow: hidden;
+}
+
+.food-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.food-title{
+    font-weight: 600;
+}
+
+.food-desc{
+    font-size: 14px;
+    color: #666;
+    min-height: 45px;
+}
+
+.food-price{
+    color: #28a745;
+    font-weight: bold;
+}
+
+.order-btn{
+    border-radius: 30px;
+    padding: 6px 20px;
+}
+
+/* Rating Section ke liye Wrapper */
+.rating-summary-wrapper {
+    z-index: 2;
+}
+
+/* Hover Popup Styling */
+.hover-popup {
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Progress bar ki height ko bariki se control karne ke liye (Optional) */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 5px;
+}

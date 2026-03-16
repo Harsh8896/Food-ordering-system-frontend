@@ -1,0 +1,33 @@
+.custom-pagination {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+  padding: 0;
+}
+
+.custom-pagination li button {
+  border: none;
+  background: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.custom-pagination li button:hover {
+  background: #ffc107;
+  color: white;
+  border-color: #ffc107;
+}
+
+.custom-pagination li.active button {
+  background: #111827;
+  color: white;
+  font-weight: 600;
+}
+
+.custom-pagination li.disabled button {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
