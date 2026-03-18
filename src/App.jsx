@@ -28,6 +28,9 @@
   import FoodList from './Pages/FoodList'
   import TrackOrder from "./Pages/TrackOrder"
   import ManageReviews from "./Pages/ManageReviews"
+import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard'
+import ConfirmOrder from './Pages/ConfirmOrder'
+import OrderDelivered from './Pages/OrderDelivered'
 
   const App = () => {
     return (
@@ -59,10 +62,16 @@
           <Route path="/edit_food/:id" element={<EditFood />} />
           <Route path="/manage_users" element={<ManageUser />} />
           <Route path="/food-menu" element={<FoodList />} />
-          <Route path="/track-order" element={<TrackOrder/>} />
+          <Route path="/track-order/:paramOrderNumber" element={<TrackOrder/>} />
           <Route path="/manage-review" element={<ManageReviews/>} />
+          <Route path="/confirm-order" element={<ConfirmOrder/>} />
+          <Route path="/order-delivered" element={<OrderDelivered/>} />
 
 
+
+
+
+          <Route path="/super-admin" element={<SuperAdminDashboard />} />
 
         </Routes>
       </BrowserRouter>

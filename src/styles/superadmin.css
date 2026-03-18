@@ -1,0 +1,714 @@
+/* ========================================
+   SUPER ADMIN DASHBOARD STYLES
+   ======================================== */
+
+.super-admin-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========================================
+   SIDEBAR STYLES
+   ======================================== */
+.super-admin-sidebar {
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  padding: 30px 20px;
+  min-height: 100vh;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  margin-bottom: 40px;
+  text-align: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.logo-icon {
+  font-size: 32px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.sidebar-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.sidebar-nav {
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.sidebar-nav-link {
+  color: rgba(255, 255, 255, 0.7) !important;
+  padding: 12px 20px !important;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white !important;
+  border-left: 3px solid #3498db;
+}
+
+.sidebar-nav-link.active {
+  background: linear-gradient(90deg, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.4));
+  color: white !important;
+  border-left: 3px solid #3498db;
+}
+
+.nav-icon {
+  font-size: 18px;
+  min-width: 24px;
+}
+
+.nav-label {
+  font-size: 14px;
+}
+
+.sidebar-footer {
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.admin-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.admin-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.admin-details p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.admin-name {
+  font-weight: 600;
+  color: white;
+}
+
+.admin-email {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   MAIN CONTENT AREA
+   ======================================== */
+.main-content-wrapper {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.main-content {
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.section-header {
+  margin-bottom: 40px;
+}
+
+.section-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.section-header p {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.section-header-inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.section-header-inline h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* ========================================
+   STAT CARDS
+   ======================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color);
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card-primary {
+  --color: #3498db;
+}
+
+.stat-card-success {
+  --color: #2ecc71;
+}
+
+.stat-card-warning {
+  --color: #f39c12;
+}
+
+.stat-card-info {
+  --color: #1abc9c;
+}
+
+.stat-card .card-body {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex-grow: 1;
+}
+
+.stat-title {
+  font-size: 12px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-trend {
+  font-size: 12px;
+  color: #2ecc71;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* ========================================
+   RESTAURANT TABLE STYLES
+   ======================================== */
+.restaurant-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.restaurant-table {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.restaurant-table thead {
+  background: linear-gradient(90deg, #34495e, #2c3e50);
+  color: white;
+}
+
+.restaurant-table thead th {
+  border: none;
+  font-weight: 600;
+  padding: 16px 12px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.restaurant-table tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: background-color 0.2s ease;
+}
+
+.restaurant-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.restaurant-table tbody td {
+  padding: 16px 12px;
+  vertical-align: middle;
+}
+
+.restaurant-table .badge {
+  font-size: 11px;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+/* ========================================
+   FORMS & MODALS
+   ======================================== */
+.modal-header {
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+}
+
+.modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.form-label {
+  font-size: 13px;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.form-control,
+.form-select {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #e74c3c;
+}
+
+.form-text.text-danger {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #2980b9, #1f618d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-outline-primary {
+  color: #3498db;
+  border: 2px solid #3498db;
+}
+
+.btn-outline-primary:hover {
+  background: #3498db;
+  color: white;
+}
+
+.btn-outline-secondary {
+  color: #95a5a6;
+  border: 2px solid #95a5a6;
+}
+
+.btn-outline-secondary:hover {
+  background: #95a5a6;
+  color: white;
+}
+
+.btn-danger {
+  background: #e74c3c;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+/* ========================================
+   CREDENTIALS MANAGEMENT
+   ======================================== */
+.credentials-management {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.credentials-card {
+  border: none;
+  border-radius: 12px;
+}
+
+.restaurant-select-list .list-group-item {
+  border: 1px solid #ecf0f1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.restaurant-select-list .list-group-item:hover {
+  background-color: #f8f9fa;
+  border-color: #3498db;
+}
+
+.restaurant-select-list .list-group-item.active {
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  border-color: #2980b9;
+  color: white;
+}
+
+.restaurant-select-list .list-group-item.active p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.credentials-detail-card {
+  border: none;
+  border-radius: 12px;
+}
+
+.credential-field {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.credential-input {
+  background: white;
+  border: 1px solid #ddd;
+}
+
+.credential-input:focus {
+  border-color: #3498db !important;
+}
+
+.email-template {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+/* ========================================
+   SYSTEM SETTINGS
+   ======================================== */
+.system-settings {
+  background: white;
+}
+
+.settings-card {
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.settings-card .card-header {
+  border: none;
+  border-radius: 12px 12px 0 0;
+  padding: 16px 20px;
+  font-weight: 600;
+}
+
+.settings-card .card-body {
+  padding: 24px;
+}
+
+.system-info-item p:first-child {
+  margin-bottom: 4px;
+}
+
+.form-check {
+  padding-left: 30px;
+}
+
+.form-check-input {
+  width: 48px;
+  height: 24px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.form-check-input:checked {
+  background-color: #2ecc71;
+  border-color: #27ae60;
+}
+
+.form-check-label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+  .super-admin-dashboard .row {
+    flex-direction: column;
+  }
+
+  .sidebar-wrapper {
+    min-height: auto;
+    border-bottom: 2px solid #ecf0f1;
+    margin-bottom: 20px;
+  }
+
+  .main-content-wrapper {
+    max-height: none;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .section-header h1 {
+    font-size: 24px;
+  }
+
+  .section-header-inline {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .section-header-inline .btn {
+    width: 100%;
+  }
+
+  .restaurant-table-wrapper {
+    font-size: 12px;
+  }
+
+  .restaurant-table th,
+  .restaurant-table td {
+    padding: 12px 8px;
+  }
+
+  .table-responsive {
+    font-size: 12px;
+  }
+
+  .credentials-management .row {
+    flex-direction: column;
+  }
+
+  .modal {
+    padding: 20px;
+  }
+
+  .sidebar-nav-link {
+    padding: 10px 16px !important;
+  }
+
+  .stat-card .card-body {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header h1 {
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .restaurant-table-wrapper {
+    font-size: 11px;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .btn-group .btn {
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+}
+
+/* ========================================
+   ANIMATIONS & TRANSITIONS
+   ======================================== */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.section-header {
+  animation: slideInDown 0.5s ease;
+}
+
+.stat-card {
+  animation: fadeIn 0.6s ease;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+}
+
+.badge {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+.main-content-wrapper::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content-wrapper::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.main-content-wrapper::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 4px;
+}
+
+.main-content-wrapper::-webkit-scrollbar-thumb:hover,
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #2980b9;
+}

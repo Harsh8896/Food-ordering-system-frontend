@@ -8,6 +8,7 @@ const ViewFoodOrder = () => {
 
     const { order_number } = useParams();
     const [data, setData] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState(""); // 👈 Track selected status
     const adminUser = localStorage.getItem('adminUser');
     const navigate = useNavigate();
 
@@ -63,11 +64,24 @@ const ViewFoodOrder = () => {
 
     const currentStatus = order?.order_final_status || "";
 
+    // 👇 Sirf wo options jo current status ke baad aate hain
     const visibleOptions =
         statusOptions.indexOf(currentStatus) !== -1
             ? statusOptions.slice(statusOptions.indexOf(currentStatus) + 1)
             : statusOptions;
 
+    // 👇 Pehla option = next step (enabled), baaki disabled
+    //    Jab user pehla select kare tab second enable ho, aur aage bhi
+    const getOptionDisabled = (status, index) => {
+        if (selectedStatus === "") {
+            // Koi select nahi hua — sirf pehla (index 0) enabled
+            return index !== 0;
+        } else {
+            // Jo select hua uske baad wala enabled, baaki disabled
+            const selectedIndex = visibleOptions.indexOf(selectedStatus);
+            return index > selectedIndex + 1;
+        }
+    };
 
 
     const onSub = (e) => {
@@ -295,7 +309,14 @@ const ViewFoodOrder = () => {
 
                                         <label>Status</label>
 
-                                        <select name="status" className="form-control" required>
+                                        {/* ✅ Sequential Dropdown */}
+                                        <select
+                                            name="status"
+                                            className="form-control"
+                                            required
+                                            value={selectedStatus}
+                                            onChange={(e) => setSelectedStatus(e.target.value)}
+                                        >
 
                                             <option value="">
                                                 --Select Status--
@@ -303,7 +324,11 @@ const ViewFoodOrder = () => {
 
                                             {visibleOptions.map((status, index) => (
 
-                                                <option key={index} value={status}>
+                                                <option
+                                                    key={index}
+                                                    value={status}
+                                                    disabled={getOptionDisabled(status, index)} // 👈 Disable logic
+                                                >
                                                     {status}
                                                 </option>
 
