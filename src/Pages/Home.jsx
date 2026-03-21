@@ -249,7 +249,9 @@ Currently Unavailable
 )}
 
 </div>
-
+<p className="text-muted small mb-1">
+    🍽️ {item.restaurant_name || 'Local Restaurant'}
+</p>
 </div>
 
 </div>

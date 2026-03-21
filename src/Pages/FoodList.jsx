@@ -230,6 +230,9 @@ const FoodList = () => {
                             <span className="badge bg-light text-danger border rounded-pill py-2">Unavailable</span>
                           )}
                         </div>
+                        <p className="text-muted small mb-1">
+    🍽️ {food.restaurant_name || 'Local Restaurant'}
+</p>
                       </div>
                     </div>
                   </div>

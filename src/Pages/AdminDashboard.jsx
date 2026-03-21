@@ -12,6 +12,8 @@ import {
     FaList, FaHeart, FaStar, FaBell 
 } from 'react-icons/fa';
 
+const BASE_URL = 'http://127.0.0.1:8000/api';
+
 const AdminDashboard = () => {
     const adminUser = localStorage.getItem('adminUser');
     const navigate = useNavigate();
@@ -22,9 +24,18 @@ const AdminDashboard = () => {
             navigate('/admin-login');
             return;
         }
-        fetch('http://127.0.0.1:8000/api/dashboard_metrics/')
+
+        // null check — 'null' string bhi handle karo
+        const rid = localStorage.getItem('restaurantId');
+        const validRid = rid && rid !== 'null' ? rid : null;
+        const url = validRid
+            ? `${BASE_URL}/dashboard_metrics/?restaurant_id=${validRid}`
+            : `${BASE_URL}/dashboard_metrics/`;
+
+        fetch(url)
             .then(res => res.json())
             .then(data => setMetrics(data));
+
     }, [adminUser, navigate]);
 
     const cardData = [
@@ -49,13 +60,11 @@ const AdminDashboard = () => {
         <AdminLayout>
             <div className="dashboard-wrapper p-4" style={{backgroundColor: '#f8fafc', minHeight: '100vh'}}>
                 
-                {/* Header Section */}
                 <div className="mb-4">
                     <h3 className="fw-bold text-dark mb-1">Business Overview</h3>
                     <p className="text-muted small">Welcome back, Admin! Here is what's happening today.</p>
                 </div>
 
-                {/* Metrics Grid */}
                 <div className="row g-3">
                     {cardData.map((item, i) => (
                         <div className="col-xl-3 col-lg-4 col-md-6" key={i}>
@@ -77,7 +86,6 @@ const AdminDashboard = () => {
                         </div>
                     ))}
 
-                    {/* Branding Card */}
                     <div className="col-xl-3 col-lg-4 col-md-6">
                         <div className="card h-100 border-0 shadow-sm d-flex flex-row align-items-center p-3" style={{background: 'linear-gradient(45deg, #ef4444, #b91c1c)', color: '#fff'}}>
                             <FaBell className="me-3" size={30} />
@@ -89,7 +97,6 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Charts Section */}
                 <div className="row mt-4 g-4">
                     <div className="col-lg-6">
                         <div className="chart-container bg-white p-4 shadow-sm rounded-4 border">
@@ -137,9 +144,7 @@ const AdminDashboard = () => {
                     justify-content: center;
                     font-size: 1.4rem;
                 }
-                .chart-container {
-                    border-radius: 16px !important;
-                }
+                .chart-container { border-radius: 16px !important; }
                 .rounded-4 { border-radius: 1rem !important; }
             `}</style>
         </AdminLayout>

@@ -20,7 +20,8 @@ const AddCategory = () => {
                   "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                  category_name : categoryName
+                  category_name : categoryName,
+                  restaurant: localStorage.getItem('restaurantId')
               }),
   
           })

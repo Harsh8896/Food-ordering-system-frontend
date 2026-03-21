@@ -21,7 +21,8 @@ const SearchOrder = () => {
         if (!searchTerm.trim()) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/search-orders/?q=${searchTerm}`);
+            const restaurantId = localStorage.getItem('restaurantId');
+            const response = await fetch(`http://127.0.0.1:8000/api/search-orders/?q=${searchTerm}&restaurant_id=${restaurantId}`);
             const data = await response.json();
             setOrders(data);
             setSubmitted(true);

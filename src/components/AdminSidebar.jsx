@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaThLarge,
   FaUsers,
@@ -12,13 +12,18 @@ import {
   FaStar,
   FaSignOutAlt,
   FaBars,
+  FaStore,
 } from "react-icons/fa";
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // localStorage se restaurant info lo
+  const restaurantName = localStorage.getItem("restaurantName") || "Admin";
+  const ownerEmail = localStorage.getItem("ownerEmail") || "";
 
   const [isCollapsed, setIsCollapsed] = useState(false);
-
   const [openMenus, setOpenMenus] = useState({
     category: false,
     food: false,
@@ -33,6 +38,24 @@ const AdminSidebar = () => {
   };
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminUser");
+    localStorage.removeItem("restaurantId");
+    localStorage.removeItem("restaurantName");
+    localStorage.removeItem("ownerEmail");
+    navigate("/admin-login");
+  };
+
+  // Restaurant name se initials nikalo (e.g. "Spice Garden" → "SG")
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div
@@ -49,7 +72,6 @@ const AdminSidebar = () => {
         transition: "0.3s",
         boxShadow: "2px 0 20px rgba(0,0,0,0.4)",
         zIndex: 9999,
-        backdropFilter: "blur(12px)",
         borderRight: "1px solid rgba(255,255,255,0.05)",
       }}
     >
@@ -62,29 +84,83 @@ const AdminSidebar = () => {
           justifyContent: isCollapsed ? "center" : "space-between",
         }}
       >
-        {!isCollapsed && <h5 style={{ margin: 0 }}>Admin</h5>}
+        {!isCollapsed && (
+          <div className="d-flex align-items-center gap-2">
+            <FaStore className="text-warning" />
+            <h5 style={{ margin: 0, fontSize: "15px" }}>Restaurant Panel</h5>
+          </div>
+        )}
         <FaBars
           style={{ cursor: "pointer" }}
           onClick={() => setIsCollapsed(!isCollapsed)}
         />
       </div>
 
-      {/* PROFILE */}
+      {/* PROFILE — Restaurant Owner Info */}
       {!isCollapsed && (
-        <div style={{ textAlign: "center", padding: "10px" }}>
-          <img
-            src="/img/admin.png"
-            alt="admin"
+        <div style={{ textAlign: "center", padding: "16px 10px" }}>
+          {/* Avatar — initials se */}
+          <div
             style={{
-              width: "55px",
+              width: "56px",
+              height: "56px",
               borderRadius: "50%",
-              marginBottom: "8px",
+              background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 10px",
+              fontSize: "18px",
+              fontWeight: "700",
+              color: "#fff",
+              border: "2px solid rgba(255,255,255,0.2)",
             }}
-          />
-          <h6 style={{ margin: 0 }}>Harsh Admin</h6>
-          <p style={{ fontSize: "12px", color: "#64748b" }}>
-            Super Admin
+          >
+            {getInitials(restaurantName)}
+          </div>
+          <h6 style={{ margin: 0, fontSize: "14px", fontWeight: "600" }}>
+            {restaurantName}
+          </h6>
+          <p style={{ fontSize: "11px", color: "#64748b", marginTop: "4px", marginBottom: 0 }}>
+            {ownerEmail}
           </p>
+          <span
+            style={{
+              display: "inline-block",
+              marginTop: "6px",
+              background: "rgba(34,197,94,0.15)",
+              color: "#22c55e",
+              fontSize: "10px",
+              padding: "2px 10px",
+              borderRadius: "20px",
+              border: "1px solid rgba(34,197,94,0.3)",
+            }}
+          >
+            ● Online
+          </span>
+        </div>
+      )}
+
+      {/* Collapsed avatar */}
+      {isCollapsed && (
+        <div style={{ textAlign: "center", padding: "10px 0" }}>
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto",
+              fontSize: "14px",
+              fontWeight: "700",
+              color: "#fff",
+            }}
+          >
+            {getInitials(restaurantName)}
+          </div>
         </div>
       )}
 
@@ -175,6 +251,7 @@ const AdminSidebar = () => {
       {/* LOGOUT */}
       <div style={{ padding: "10px" }}>
         <button
+          onClick={handleLogout}
           style={{
             width: "100%",
             padding: "10px",
@@ -184,9 +261,16 @@ const AdminSidebar = () => {
             color: "#fff",
             cursor: "pointer",
             transition: "0.2s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "8px",
           }}
+          onMouseEnter={(e) => e.currentTarget.style.background = "#dc2626"}
+          onMouseLeave={(e) => e.currentTarget.style.background = "#ef4444"}
         >
-          <FaSignOutAlt /> {!isCollapsed && "Logout"}
+          <FaSignOutAlt />
+          {!isCollapsed && "Logout"}
         </button>
       </div>
     </div>
@@ -196,12 +280,8 @@ const AdminSidebar = () => {
 export default AdminSidebar;
 
 
-
-
-
 // ================= COMPONENTS =================
 
-// Sidebar Item
 const SidebarItem = ({ icon, text, to, active, collapsed }) => {
   return (
     <Link
@@ -246,22 +326,13 @@ const SidebarItem = ({ icon, text, to, active, collapsed }) => {
           }}
         />
       )}
-
       <span style={{ fontSize: "1.1rem" }}>{icon}</span>
       {!collapsed && <span>{text}</span>}
     </Link>
   );
 };
 
-// Dropdown
-const Dropdown = ({
-  icon,
-  text,
-  open,
-  toggle,
-  children,
-  collapsed,
-}) => {
+const Dropdown = ({ icon, text, open, toggle, children, collapsed }) => {
   return (
     <div style={{ marginBottom: "6px" }}>
       <div
@@ -288,7 +359,6 @@ const Dropdown = ({
           <span style={{ fontSize: "1.1rem" }}>{icon}</span>
           {!collapsed && text}
         </div>
-
         {!collapsed && (
           <FaChevronDown
             style={{
@@ -318,7 +388,6 @@ const Dropdown = ({
   );
 };
 
-// Sub Item
 const SubItem = ({ to, text }) => {
   return (
     <Link

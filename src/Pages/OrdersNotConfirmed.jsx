@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const OrdersNotConfirmed = () => {
     const [orders, setOrders] = useState([]);
@@ -13,19 +13,23 @@ const OrdersNotConfirmed = () => {
             return;
         }
 
-        fetch('http://127.0.0.1:8000/api/orders-not-confirmed/')
+        const rid = localStorage.getItem('restaurantId');
+        const restaurantId = rid && rid !== 'null' ? rid : null;
+        const url = restaurantId
+            ? `http://127.0.0.1:8000/api/orders-not-confirmed/?restaurant_id=${restaurantId}`
+            : `http://127.0.0.1:8000/api/orders-not-confirmed/`;
+
+        fetch(url)
             .then(res => res.json())
-            .then(data => {
-                setOrders(data);
-            });
+            .then(data => setOrders(data));
     }, []);
 
     return (
         <AdminLayout>
             <div className="container mt-4">
-                <h3 className="text-center text-primary mb-4">Detail of Order Not Confirmed</h3>
+                <h3 className="text-center text-primary mb-4">Orders Not Confirmed</h3>
                 <div className="text-end mb-3">
-                    <h5>Total Not Confirmed Orders: <span className="badge bg-success">{orders.length}</span></h5>
+                    <h5>Total: <span className="badge bg-success">{orders.length}</span></h5>
                 </div>
                 <table className="table table-bordered table-hover table-striped">
                     <thead className="table-dark">
@@ -37,7 +41,7 @@ const OrdersNotConfirmed = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order, index) => (
+                        {orders.length > 0 ? orders.map((order, index) => (
                             <tr key={order.id}>
                                 <td>{index + 1}</td>
                                 <td>{order.order_number}</td>
@@ -48,7 +52,13 @@ const OrdersNotConfirmed = () => {
                                     </a>
                                 </td>
                             </tr>
-                        ))}
+                        )) : (
+                            <tr>
+                                <td colSpan="4" className="text-center text-muted py-4">
+                                    Koi pending order nahi hai
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

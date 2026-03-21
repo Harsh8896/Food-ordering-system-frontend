@@ -32,27 +32,30 @@ const OrderReport = () => {
 
     // Form submit hone par backend API call karne ke liye
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/order-between-dates/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
+    e.preventDefault();
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/order-between-dates/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...formData,
+                restaurant_id: localStorage.getItem('restaurantId')  // ← body ke andar
+            }),
+        });
 
-            const data = await response.json();
-            if (response.status === 200) {
-                setOrders(data);
-            } else {
-                toast.error("Something went wrong");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Error connecting to server");
+        const data = await response.json();
+        if (response.status === 200) {
+            setOrders(data);
+        } else {
+            toast.error("Something went wrong");
         }
-    };
+    } catch (error) {
+        console.error(error);
+        toast.error("Error connecting to server");
+    }
+};
 
     return (
         <AdminLayout>
