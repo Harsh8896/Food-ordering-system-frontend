@@ -31,6 +31,9 @@
 import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard'
 import ConfirmOrder from './Pages/ConfirmOrder'
 import OrderDelivered from './Pages/OrderDelivered'
+import RestaurantOwnerLogin from './components/RestaurantOwnerLogin '
+import RestaurantDashboard from './Pages/RestaurantDashboard'
+import MyDeliveredOrders from "./Pages/MyDeliveredOrders";
 
   const App = () => {
     return (
@@ -72,6 +75,9 @@ import OrderDelivered from './Pages/OrderDelivered'
 
 
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
+          <Route path="/restaurant-login" element={<RestaurantOwnerLogin />} />
+          <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
+          <Route path="/my-orders" element={<MyDeliveredOrders />} />
 
         </Routes>
       </BrowserRouter>

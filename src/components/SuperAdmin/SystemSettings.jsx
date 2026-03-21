@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+
+const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const SystemSettings = () => {
   const [settings, setSettings] = useState({
@@ -16,6 +18,24 @@ const SystemSettings = () => {
   });
 
   const [savedAlert, setSavedAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // GET — page load pe settings fetch karo
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/platform-settings/`);
+        const data = await res.json();
+        setSettings(data);
+      } catch (err) {
+        console.error('Settings fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,10 +45,26 @@ const SystemSettings = () => {
     }));
   };
 
-  const handleSave = () => {
-    console.log('Saving settings:', settings);
-    setSavedAlert(true);
-    setTimeout(() => setSavedAlert(false), 3000);
+  // PUT — save button pe settings update karo
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/platform-settings/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+      if (res.ok) {
+        setSavedAlert(true);
+        setTimeout(() => setSavedAlert(false), 3000);
+      } else {
+        setErrorAlert(true);
+        setTimeout(() => setErrorAlert(false), 3000);
+      }
+    } catch (err) {
+      console.error('Settings save error:', err);
+      setErrorAlert(true);
+      setTimeout(() => setErrorAlert(false), 3000);
+    }
   };
 
   const currencies = [
@@ -52,15 +88,24 @@ const SystemSettings = () => {
     'Australia/Sydney',
   ];
 
+  if (loading) return <p className="text-muted">Loading settings...</p>;
+
   return (
     <div className="system-settings">
+
       {savedAlert && (
         <Alert variant="success" dismissible onClose={() => setSavedAlert(false)}>
           ✓ Settings saved successfully!
         </Alert>
       )}
 
-      {/* Basic Settings */}
+      {errorAlert && (
+        <Alert variant="danger" dismissible onClose={() => setErrorAlert(false)}>
+          ✗ Something went wrong. Try again!
+        </Alert>
+      )}
+
+      {/* Branding Settings */}
       <Card className="settings-card shadow-sm mb-4">
         <Card.Header className="bg-primary text-white">
           <h5 className="mb-0">🏢 Branding Settings</h5>
@@ -184,9 +229,7 @@ const SystemSettings = () => {
               onChange={handleChange}
             >
               {timezones.map(tz => (
-                <option key={tz} value={tz}>
-                  {tz}
-                </option>
+                <option key={tz} value={tz}>{tz}</option>
               ))}
             </Form.Select>
           </Form.Group>
@@ -249,7 +292,7 @@ const SystemSettings = () => {
               </div>
               <div className="system-info-item mb-3">
                 <p className="text-muted small mb-1">API Endpoint</p>
-                <p className="fw-bold">api.foodsys.com</p>
+                <p className="fw-bold">{BASE_URL}</p>
               </div>
             </Col>
             <Col md={6}>
@@ -286,15 +329,12 @@ const SystemSettings = () => {
             These actions cannot be undone. Proceed with caution.
           </p>
           <div className="d-flex gap-2">
-            <Button variant="outline-danger">
-              🗑️ Clear All Data
-            </Button>
-            <Button variant="outline-danger">
-              🔐 Reset Admin Password
-            </Button>
+            <Button variant="outline-danger">🗑️ Clear All Data</Button>
+            <Button variant="outline-danger">🔐 Reset Admin Password</Button>
           </div>
         </Card.Body>
       </Card>
+
     </div>
   );
 };

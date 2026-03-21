@@ -7,12 +7,11 @@ const AdminLayout = ({children}) => {
   const [sideBarOpen, setSidebarOpen] = useState(true)
   const [newOrders, setNewOrders] = useState(0);
 
-  useEffect(()=>{
+  useEffect(() => {
     const handleResize = () => {
-      if(window.innerWidth < 768){
+      if (window.innerWidth < 768) {
         setSidebarOpen(false)
-      }
-      else{
+      } else {
         setSidebarOpen(true)
       }
     }
@@ -22,12 +21,18 @@ const AdminLayout = ({children}) => {
   }, [])
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/dashboard_metrics/')
-        .then(res => res.json())
-        .then(data => {
-            setNewOrders(data.new_orders); // API से 'new_orders' की वैल्यू लें
-        });
-}, []);
+    const rid = localStorage.getItem('restaurantId');
+    const restaurantId = rid && rid !== 'null' ? rid : null;
+    const url = restaurantId
+      ? `http://127.0.0.1:8000/api/dashboard_metrics/?restaurant_id=${restaurantId}`
+      : `http://127.0.0.1:8000/api/dashboard_metrics/`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setNewOrders(data.new_orders);
+      });
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(prev => !prev)
@@ -35,16 +40,13 @@ const AdminLayout = ({children}) => {
 
   return (
     <div className='d-flex'>
-        {
-          sideBarOpen && <AdminSidebar/>
-        }
-        <div id='page-content-wrapper' className={`w-100 ${sideBarOpen ? "full-width" : "width-sidebar"}`}>
+      {sideBarOpen && <AdminSidebar />}
+      <div id='page-content-wrapper' className={`w-100 ${sideBarOpen ? "full-width" : "width-sidebar"}`}>
         <AdminHeader toggleSidebar={toggleSidebar} sidebarOpen={sideBarOpen} newOrders={newOrders} />
-
         <div className='container-fluid mt-4'>
-            {children}
+          {children}
         </div>
-        </div>
+      </div>
     </div>
   )
 }

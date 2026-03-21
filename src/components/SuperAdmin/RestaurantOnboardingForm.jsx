@@ -5,9 +5,10 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
   const [formData, setFormData] = useState({
     name: '',
     owner_email: '',
-    temporary_password: '',
+    owner_password: '',
     location: '',
     subscription_plan: 'Standard',
+    subscription_expiry: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -31,14 +32,18 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
       newErrors.owner_email = 'Please enter a valid email';
     }
 
-    if (!formData.temporary_password.trim()) {
-      newErrors.temporary_password = 'Temporary password is required';
-    } else if (formData.temporary_password.length < 8) {
-      newErrors.temporary_password = 'Password must be at least 8 characters';
+    if (!formData.owner_password.trim()) {
+      newErrors.owner_password = 'Password is required';
+    } else if (formData.owner_password.length < 8) {
+      newErrors.owner_password = 'Password must be at least 8 characters';
     }
 
     if (!formData.location.trim()) {
       newErrors.location = 'Location is required';
+    }
+
+    if (!formData.subscription_expiry) {
+      newErrors.subscription_expiry = 'Expiry date is required';
     }
 
     return newErrors;
@@ -54,7 +59,6 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -72,7 +76,7 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
     }
     setFormData(prev => ({
       ...prev,
-      temporary_password: password,
+      owner_password: password,
     }));
   };
 
@@ -86,12 +90,14 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
     }
 
     onSubmit(formData);
+
     setFormData({
       name: '',
       owner_email: '',
-      temporary_password: '',
+      owner_password: '',
       location: '',
       subscription_plan: 'Standard',
+      subscription_expiry: '',
     });
     setErrors({});
   };
@@ -103,6 +109,8 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
       </Modal.Header>
       <Modal.Body className="p-4">
         <Form onSubmit={handleSubmit}>
+
+          {/* Restaurant Name */}
           <Form.Group className="mb-4">
             <Form.Label className="fw-bold">Restaurant Name</Form.Label>
             <Form.Control
@@ -116,6 +124,7 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
             {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
           </Form.Group>
 
+          {/* Owner Email */}
           <Form.Group className="mb-4">
             <Form.Label className="fw-bold">Owner Email</Form.Label>
             <Form.Control
@@ -131,6 +140,7 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
             )}
           </Form.Group>
 
+          {/* Password */}
           <Form.Group className="mb-4">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <Form.Label className="fw-bold mb-0">Temporary Password</Form.Label>
@@ -145,20 +155,21 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
             </div>
             <Form.Control
               type="text"
-              name="temporary_password"
-              value={formData.temporary_password}
+              name="owner_password"
+              value={formData.owner_password}
               onChange={handleChange}
               placeholder="Temporary password"
-              className={errors.temporary_password ? 'is-invalid' : ''}
+              className={errors.owner_password ? 'is-invalid' : ''}
             />
-            {errors.temporary_password && (
-              <Form.Text className="text-danger">{errors.temporary_password}</Form.Text>
+            {errors.owner_password && (
+              <Form.Text className="text-danger">{errors.owner_password}</Form.Text>
             )}
             <Form.Text className="text-muted">
               The owner will change this on their first login
             </Form.Text>
           </Form.Group>
 
+          {/* Location */}
           <Form.Group className="mb-4">
             <Form.Label className="fw-bold">Location</Form.Label>
             <Form.Control
@@ -166,12 +177,15 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
               name="location"
               value={formData.location}
               onChange={handleChange}
-              placeholder="e.g., New York, NY"
+              placeholder="e.g., Mumbai, Maharashtra"
               className={errors.location ? 'is-invalid' : ''}
             />
-            {errors.location && <Form.Text className="text-danger">{errors.location}</Form.Text>}
+            {errors.location && (
+              <Form.Text className="text-danger">{errors.location}</Form.Text>
+            )}
           </Form.Group>
 
+          {/* Subscription Plan */}
           <Form.Group className="mb-4">
             <Form.Label className="fw-bold">Subscription Plan</Form.Label>
             <Form.Select
@@ -187,6 +201,21 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
             </Form.Select>
           </Form.Group>
 
+          {/* Subscription Expiry Date */}
+          <Form.Group className="mb-4">
+            <Form.Label className="fw-bold">Subscription Expiry Date</Form.Label>
+            <Form.Control
+              type="date"
+              name="subscription_expiry"
+              value={formData.subscription_expiry}
+              onChange={handleChange}
+              className={errors.subscription_expiry ? 'is-invalid' : ''}
+            />
+            {errors.subscription_expiry && (
+              <Form.Text className="text-danger">{errors.subscription_expiry}</Form.Text>
+            )}
+          </Form.Group>
+
           <div className="d-flex gap-2 justify-content-end">
             <Button variant="secondary" onClick={onHide}>
               Cancel
@@ -195,6 +224,7 @@ const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
               Create Restaurant Account
             </Button>
           </div>
+
         </Form>
       </Modal.Body>
     </Modal>

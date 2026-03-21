@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { FaSignInAlt, FaUser } from "react-icons/fa";
-import {toast, ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AddFood = () => {
+  const restaurantId = localStorage.getItem('restaurantId');
+
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     category: "",
@@ -17,14 +19,14 @@ const AddFood = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData()
-    data.append("category", formData.category)
-    data.append("item_name", formData.item_name)
-    data.append("item_price", formData.item_price)
-    data.append("item_description", formData.item_description)
-    data.append("item_quantity", formData.item_quantity)
-    data.append("image", formData.image)
-
+    const data = new FormData();
+    data.append("restaurant", restaurantId); // ← restaurant_id attach kiya
+    data.append("category", formData.category);
+    data.append("item_name", formData.item_name);
+    data.append("item_price", formData.item_price);
+    data.append("item_description", formData.item_description);
+    data.append("item_quantity", formData.item_quantity);
+    data.append("image", formData.image);
 
     try {
       const response = await fetch("http://127.0.0.1:8000/api/add-food-item/", {
@@ -35,13 +37,13 @@ const AddFood = () => {
       if (response.status === 201) {
         toast.success(result.message);
         setFormData({
-           category: "",
-    item_name: "",
-    item_price: "",
-    item_description: "",
-    item_quantity: "",
-    image: null,
-        })
+          category: "",
+          item_name: "",
+          item_price: "",
+          item_description: "",
+          item_quantity: "",
+          image: null,
+        });
       } else {
         toast.error(result.message);
       }
@@ -50,13 +52,14 @@ const AddFood = () => {
     }
   };
 
-   useEffect(()=>{
-          fetch("http://127.0.0.1:8000/api/categories/")
-          .then(res => res.json())
-          .then(data => {
-              setCategories(data)
-          })
-      },[])
+  useEffect(() => {
+    // Sirf is restaurant ki categories fetch karo
+    fetch(`http://127.0.0.1:8000/api/categories/?restaurant_id=${restaurantId}`)
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data);
+      });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,24 +76,16 @@ const AddFood = () => {
     }));
   };
 
-  //  const handleSubmit = (e) => {
-  //      let keyword = e.toLowerCase() // Indian => indian
-
-  //       let filtered = categories.filter((item)=>item.category_name.toLowerCase().includes(keyword))
-  //      setCategories(filtered )
-
-  //  }
-
   return (
     <AdminLayout>
       <div className="row">
         <div className="col-md-8">
           <div className="p-4 shadow-sm rounded">
             <h4 className="mb-4">
-              <i className="fas fa-pluse-circle text-primary me-2"></i> Add Food
-              Item
+              <i className="fas fa-plus-circle text-primary me-2"></i> Add Food Item
             </h4>
             <form onSubmit={handleSubmit} encType="multipart/form-data">
+
               <div className="mb-3">
                 <label className="form-label">
                   <FaUser className="me-2 icon-fix" /> Food Category
@@ -102,13 +97,11 @@ const AddFood = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select Category</option>
-                  {categories.map((item, index) => {
-                    return (
-                      <option value={item.id} key={index}>
-                        {item.category_name}
-                      </option>
-                    );
-                  })}
+                  {categories.map((item, index) => (
+                    <option value={item.id} key={index}>
+                      {item.category_name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -179,7 +172,6 @@ const AddFood = () => {
                 <input
                   type="file"
                   className="form-control"
-                  placeholder="Enter Food Price"
                   required
                   name="image"
                   onChange={handleFileChange}
