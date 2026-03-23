@@ -34,6 +34,8 @@ import OrderDelivered from './Pages/OrderDelivered'
 import RestaurantOwnerLogin from './components/RestaurantOwnerLogin '
 import RestaurantDashboard from './Pages/RestaurantDashboard'
 import MyDeliveredOrders from "./Pages/MyDeliveredOrders";
+import MasterFoodHome from './Pages/MasterFoodHome '
+import MasterFoodDetail from './Pages/MasterFoodDetail '
 
   const App = () => {
     return (
@@ -78,6 +80,10 @@ import MyDeliveredOrders from "./Pages/MyDeliveredOrders";
           <Route path="/restaurant-login" element={<RestaurantOwnerLogin />} />
           <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
           <Route path="/my-orders" element={<MyDeliveredOrders />} />
+
+
+          <Route path="/menu1" element={<MasterFoodHome />} />
+<Route path="/master-food/:id" element={<MasterFoodDetail />} />
 
         </Routes>
       </BrowserRouter>
