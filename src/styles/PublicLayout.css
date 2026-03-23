@@ -1,11 +1,72 @@
+/* 🔥 NAVBAR */
+.custom-navbar {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  padding: 12px 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.brand-logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff !important;
+  letter-spacing: 1px;
+}
+
+.nav-link {
+  color: #cbd5e1 !important;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-link:hover {
+  color: #facc15 !important;
+}
+
+.active-link {
+  color: #facc15 !important;
+  border-bottom: 2px solid #facc15;
+}
+
+/* 🛒 CART */
+.cart-icon {
+  position: relative;
+  font-size: 18px;
+}
+
 .cart-badge {
   position: absolute;
-  top: -5px;
+  top: -6px;
   right: -10px;
-  background: #ff4d4f;
-  color: white;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 50px;
-  font-weight: 600;
+  background: #facc15;
+  color: black;
+  font-size: 11px;
+  padding: 3px 7px;
+  border-radius: 50%;
+  font-weight: bold;
+  animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* 👤 USER */
+.user-dropdown {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.dropdown-menu {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* 🔻 FOOTER */
+.footer {
+  background: #0f172a;
+  color: #cbd5e1;
+  padding: 20px 0;
+  margin-top: 50px;
 }

@@ -4,7 +4,7 @@ import AdminLayout from '../components/AdminLayout';
 import SalesBarChart from '../components/SalesBarChart';
 import TopProducts from '../components/TopProducts';
 import WeeklySalesChart from '../components/WeeklySalesChart';
-import WeeklyUserChart from '../components/WeeklySalesChart';
+import WeeklyUserChart from '../components/WeeklyUserChart';
 import { 
     FaShoppingCart, FaCartPlus, FaCheckCircle, FaUtensils, 
     FaMotorcycle, FaTruck, FaTimesCircle, FaUsers, 

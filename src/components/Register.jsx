@@ -3,38 +3,76 @@ import PublicLayout from "../components/PublicLayout";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { FaUser, FaEnvelope, FaMobileAlt, FaLock, FaEye, FaEyeSlash, FaUtensils } from "react-icons/fa";
+
+const inputStyle = {
+  width: '100%',
+  padding: '12px 12px 12px 44px',
+  border: '1.5px solid #e2e8f0',
+  borderRadius: '12px',
+  fontSize: '14px',
+  outline: 'none',
+  transition: 'border-color 0.2s',
+  background: '#f8fafc',
+  color: '#1e293b',
+};
+
+// ✅ Component ke BAHAR define karo — ye fix hai
+const InputField = ({ icon: Icon, name, type, placeholder, value, onChange, showToggle, onToggle, show }) => (
+  <div style={{ position: 'relative', marginBottom: '16px' }}>
+    <div style={{
+      position: 'absolute', left: '14px', top: '50%',
+      transform: 'translateY(-50%)', color: '#94a3b8', zIndex: 1
+    }}>
+      <Icon size={16} />
+    </div>
+    <input
+      type={showToggle ? (show ? 'text' : 'password') : type}
+      name={name}
+      value={value}
+      onChange={onChange}   // ✅ onChange prop se aayega
+      placeholder={placeholder}
+      required
+      style={inputStyle}
+      onFocus={e => e.target.style.borderColor = '#f59e0b'}
+      onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+    />
+    {showToggle && (
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          position: 'absolute', right: '14px', top: '50%',
+          transform: 'translateY(-50%)',
+          background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8',
+        }}
+      >
+        {show ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+      </button>
+    )}
+  </div>
+);
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    email: "",
-    mobile: "",
-    password: "",
-    repeatPassword: "",
+    firstname: "", lastname: "", email: "",
+    mobile: "", password: "", repeatPassword: "",
   });
-
+  const [showPass, setShowPass] = useState(false);
+  const [showRepeat, setShowRepeat] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { firstname, lastname, email, mobile, password, repeatPassword } =
-      formData;
-
-    if (password !== repeatPassword) {
-      toast.error("Password and confirm password do not match");
-      return;
-    }
-
+    const { firstname, lastname, email, mobile, password, repeatPassword } = formData;
+    if (password !== repeatPassword) { toast.error("Passwords do not match"); return; }
+    setLoading(true);
     try {
       const response = await fetch("http://127.0.0.1:8000/api/register/", {
         method: "POST",
@@ -43,125 +81,161 @@ const Register = () => {
       });
       const result = await response.json();
       if (response.status === 201) {
-        toast.success(result.message || "You have successfully registered");
-        setFormData({
-          firstname: "",
-          lastname: "",
-          email: "",
-          mobile: "",
-          password: "",
-          repeatPassword: "",
-        });
+        toast.success("Account created successfully! 🎉");
+        setFormData({ firstname: "", lastname: "", email: "", mobile: "", password: "", repeatPassword: "" });
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         toast.error(result.message || "Something went wrong");
       }
     } catch (error) {
-      toast.error("error", error);
-      console.log(error)
+      toast.error("Server error");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <PublicLayout>
-      <div className="container py-5 ">
-        <div className="row shadow-lg rounded-4 d-flex justify-content-between align-items-center">
-          <div className="col-md-6 p-4">
-            <h3 className="text-center mb-4">
-              <i className="fas-fa-user-plus me-2 ">User Registration</i>
-            </h3>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  onChange={handleChange}
-                  value={formData.firstname}
-                  name="firstname"
-                  className="form-control"
-                  placeholder="First Name"
-                  required
-                />
-              </div>
+      <ToastContainer position="top-center" autoClose={2000} />
 
-              <div className="mb-3">
-                <input
-                  type="text"
-                  onChange={handleChange}
-                  value={formData.lastname}
-                  name="lastname"
-                  className="form-control"
-                  placeholder="Last Name"
-                  required
-                />
-              </div>
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #fff 100%)',
+        display: 'flex', alignItems: 'center', padding: '40px 0'
+      }}>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-10">
+              <div style={{
+                background: '#fff', borderRadius: '24px',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.08)',
+                overflow: 'hidden', display: 'flex', minHeight: '580px'
+              }}>
 
-              <div className="mb-3">
-                <input
-                  type="email"
-                  onChange={handleChange}
-                  value={formData.email}
-                  name="email"
-                  className="form-control"
-                  placeholder="Email"
-                  required
-                />
-              </div>
+                {/* LEFT — Decorative Panel */}
+                <div style={{
+                  flex: '0 0 42%',
+                  background: 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)',
+                  padding: '50px 40px',
+                  display: 'flex', flexDirection: 'column',
+                  justifyContent: 'center', alignItems: 'center',
+                  textAlign: 'center', position: 'relative', overflow: 'hidden',
+                }}>
+                  <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(245,158,11,0.08)' }} />
+                  <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(245,158,11,0.05)' }} />
 
-              <div className="mb-3">
-                <input
-                  type="number"
-                  onChange={handleChange}
-                  value={formData.mobile}
-                  name="mobile"
-                  className="form-control"
-                  placeholder="Mobile No"
-                  required
-                />
-              </div>
+                  <div style={{
+                    width: '70px', height: '70px',
+                    background: 'rgba(245,158,11,0.15)',
+                    borderRadius: '20px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: '24px'
+                  }}>
+                    <FaUtensils size={30} color="#f59e0b" />
+                  </div>
 
-              <div className="mb-3">
-                <input
-                  type="password"
-                  onChange={handleChange}
-                  value={formData.password}
-                  name="password"
-                  className="form-control"
-                  placeholder="Password"
-                  required
-                />
-              </div>
+                  <h2 style={{ color: '#fff', fontWeight: '800', fontSize: '26px', marginBottom: '12px', lineHeight: '1.3' }}>
+                    Join Our Food Family
+                  </h2>
+                  <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: '1.7', marginBottom: '36px' }}>
+                    Register today and enjoy delicious meals delivered fresh to your doorstep.
+                  </p>
 
-              <div className="mb-3">
-                <input
-                  type="password"
-                  onChange={handleChange}
-                  value={formData.repeatPassword}
-                  name="repeatPassword"
-                  className="form-control"
-                  placeholder="Repeat Password"
-                  required
-                />
-              </div>
+                  {['Fast & Free Registration', 'Secure & Private', 'Track Orders in Real Time', 'Exclusive Deals & Offers'].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', width: '100%' }}>
+                      <div style={{
+                        width: '22px', height: '22px', borderRadius: '50%',
+                        background: 'rgba(245,158,11,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                      }}>
+                        <span style={{ color: '#f59e0b', fontSize: '11px', fontWeight: '700' }}>✓</span>
+                      </div>
+                      <span style={{ color: '#cbd5e1', fontSize: '13px' }}>{item}</span>
+                    </div>
+                  ))}
 
-              <button className="btn btn-primary mx-auto">Submit</button>
-            </form>
-          </div>
-          <div className="col-md-6">
-            <div className="text-center mt-4">
-              <img
-                src="/img/registration.jpg"
-                className="img-fluid"
-                style={{ maxHeight: "400px" }}
-                alt=""
-              />
-              <h5 className=" pt-2">Registration is fast secure and free.</h5>
-              <p className="text-muted small">
-                Join our food family and enjoy delicious food delivered to your
-                door!
-              </p>
+                  <div style={{ marginTop: '36px', color: '#64748b', fontSize: '13px' }}>
+                    Already have an account?{' '}
+                    <span
+                      onClick={() => navigate('/login')}
+                      style={{ color: '#f59e0b', fontWeight: '700', cursor: 'pointer' }}
+                    >
+                      Sign In
+                    </span>
+                  </div>
+                </div>
+
+                {/* RIGHT — Form */}
+                <div style={{
+                  flex: 1, padding: '50px 48px',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                }}>
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{ fontWeight: '800', fontSize: '24px', color: '#1e293b', marginBottom: '6px' }}>
+                      Create Account
+                    </h3>
+                    <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
+                      Fill in the details below to get started
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmit}>
+
+                    {/* First + Last Name */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <InputField icon={FaUser} name="firstname" type="text" placeholder="First Name" value={formData.firstname} onChange={handleChange} />
+                      <InputField icon={FaUser} name="lastname" type="text" placeholder="Last Name" value={formData.lastname} onChange={handleChange} />
+                    </div>
+
+                    <InputField icon={FaEnvelope} name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} />
+                    <InputField icon={FaMobileAlt} name="mobile" type="number" placeholder="Mobile Number" value={formData.mobile} onChange={handleChange} />
+                    <InputField
+                      icon={FaLock} name="password" type="password" placeholder="Password"
+                      value={formData.password} onChange={handleChange}
+                      showToggle onToggle={() => setShowPass(!showPass)} show={showPass}
+                    />
+                    <InputField
+                      icon={FaLock} name="repeatPassword" type="password" placeholder="Confirm Password"
+                      value={formData.repeatPassword} onChange={handleChange}
+                      showToggle onToggle={() => setShowRepeat(!showRepeat)} show={showRepeat}
+                    />
+
+                    {/* Password match indicator */}
+                    {formData.repeatPassword && (
+                      <div style={{
+                        fontSize: '12px', marginTop: '-8px', marginBottom: '16px',
+                        color: formData.password === formData.repeatPassword ? '#10b981' : '#ef4444'
+                      }}>
+                        {formData.password === formData.repeatPassword ? '✓ Passwords match' : '✗ Passwords do not match'}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      style={{
+                        width: '100%', padding: '14px',
+                        background: loading ? '#fcd34d' : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        border: 'none', borderRadius: '12px',
+                        color: '#fff', fontSize: '15px', fontWeight: '700',
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                      }}
+                    >
+                      {loading ? (
+                        <><span className="spinner-border spinner-border-sm" /> Creating Account...</>
+                      ) : (
+                        'Create Account →'
+                      )}
+                    </button>
+                  </form>
+                </div>
+
+              </div>
             </div>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={2000} />
       </div>
     </PublicLayout>
   );
