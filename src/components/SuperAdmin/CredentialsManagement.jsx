@@ -1,216 +1,198 @@
-import React, { useState } from 'react';
-import { Card, ListGroup, Button, Badge, Alert, Form, InputGroup } from 'react-bootstrap';
+// CredentialsManagement.jsx
+import { useState } from "react";
+import "./superadmin.css";
 
-const CredentialsManagement = ({ restaurants }) => {
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [credentialsSent, setCredentialsSent] = useState([]);
-  const [copiedId, setCopiedId] = useState(null);
+const INIT_CREDS = [
+  { id:1, name:"Super Admin",    email:"admin@foodos.com",      role:"super_admin", lastLogin:"25 Mar 2026", status:"active" },
+  { id:2, name:"Ops Manager",   email:"ops@foodos.com",        role:"manager",     lastLogin:"24 Mar 2026", status:"active" },
+  { id:3, name:"Support Agent", email:"support@foodos.com",    role:"support",     lastLogin:"22 Mar 2026", status:"inactive" },
+];
 
-  const handleSendCredentials = (restaurantId) => {
-    if (!credentialsSent.includes(restaurantId)) {
-      setCredentialsSent([...credentialsSent, restaurantId]);
-      setTimeout(() => {
-        alert(`Credentials sent to ${restaurants.find(r => r.id === restaurantId)?.owner_email}`);
-      }, 500);
-    }
+const ROLES = ["super_admin","manager","support","viewer"];
+
+export default function CredentialsManagement({ showToast }) {
+  const [creds,    setCreds]    = useState(INIT_CREDS);
+  const [showAdd,  setShowAdd]  = useState(false);
+  const [newCred,  setNewCred]  = useState({ name:"", email:"", role:"manager", password:"" });
+  const [showPwd,  setShowPwd]  = useState(false);
+
+  const set = (k) => (e) => setNewCred((f) => ({ ...f, [k]: e.target.value }));
+
+  const addCred = () => {
+    if (!newCred.name || !newCred.email || !newCred.password) { showToast("Please fill all fields.", "warning"); return; }
+    setCreds((prev) => [...prev, { id: Date.now(), ...newCred, lastLogin:"Never", status:"active" }]);
+    setNewCred({ name:"", email:"", role:"manager", password:"" });
+    setShowAdd(false);
+    showToast("Admin credential added!", "success");
   };
 
-  const handleCopyToClipboard = (text, id) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const toggleStatus = (id) => {
+    setCreds((prev) => prev.map((c) => c.id===id ? {...c, status: c.status==="active"?"inactive":"active"} : c));
+    showToast("Status updated.", "warning");
   };
 
-  const handleResendCredentials = (restaurantId) => {
-    const restaurant = restaurants.find(r => r.id === restaurantId);
-    alert(`Credentials resent to ${restaurant?.owner_email}`);
+  const deleteCred = (id) => {
+    setCreds((prev) => prev.filter((c) => c.id !== id));
+    showToast("Credential removed.", "error");
+  };
+
+  const roleBadge = (role) => {
+    const map = { super_admin:"sa-badge-gold", manager:"sa-badge-blue", support:"sa-badge-green", viewer:"sa-badge-grey" };
+    return <span className={`sa-badge ${map[role]||"sa-badge-grey"}`}>{role.replace("_"," ")}</span>;
   };
 
   return (
-    <div className="credentials-management">
-      <div className="row">
-        <div className="col-md-6">
-          <Card className="credentials-card shadow-sm mb-4">
-            <Card.Header className="bg-primary text-white">
-              <h5 className="mb-0">Select Restaurant</h5>
-            </Card.Header>
-            <ListGroup variant="flush" className="restaurant-select-list">
-              {restaurants.map(restaurant => (
-                <ListGroup.Item
-                  key={restaurant.id}
-                  onClick={() => setSelectedRestaurant(restaurant)}
-                  className={`cursor-pointer restaurant-item ${
-                    selectedRestaurant?.id === restaurant.id ? 'active' : ''
-                  }`}
-                >
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="mb-1 fw-bold">{restaurant.name}</h6>
-                      <p className="mb-0 text-muted small">{restaurant.owner_email}</p>
-                    </div>
-                    {credentialsSent.includes(restaurant.id) && (
-                      <Badge bg="success">✓ Sent</Badge>
-                    )}
-                  </div>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-          </Card>
+    <>
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div>
+            <div className="sa-card-title">
+              <i className="fa-solid fa-key" style={{ color:"var(--gold)", marginRight:8 }} />
+              Admin Credentials
+            </div>
+            <div className="sa-card-sub">{creds.length} admin accounts</div>
+          </div>
+          <button className="sa-btn sa-btn-gold" onClick={() => setShowAdd(true)}>
+            <i className="fa-solid fa-plus" /> Add Admin
+          </button>
         </div>
 
-        <div className="col-md-6">
-          {selectedRestaurant ? (
-            <Card className="credentials-detail-card shadow-sm">
-              <Card.Header className="bg-info text-white">
-                <h5 className="mb-0">Credentials Details</h5>
-              </Card.Header>
-              <Card.Body>
-                <div className="mb-4">
-                  <h6 className="fw-bold mb-3">
-                    {selectedRestaurant.name}
-                  </h6>
-                  <div className="credential-field mb-4">
-                    <label className="text-muted small mb-2 d-block">Email Address</label>
-                    <InputGroup>
-                      <Form.Control
-                        type="text"
-                        value={selectedRestaurant.owner_email}
-                        readOnly
-                        className="credential-input"
-                      />
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() =>
-                          handleCopyToClipboard(
-                            selectedRestaurant.owner_email,
-                            'email'
-                          )
-                        }
-                      >
-                        {copiedId === 'email' ? '✓ Copied' : '📋 Copy'}
-                      </Button>
-                    </InputGroup>
-                  </div>
-
-                  <div className="credential-field mb-4">
-                    <label className="text-muted small mb-2 d-block">Temporary Password</label>
-                    <InputGroup>
-                      <Form.Control
-                        type="password"
-                        value="••••••••••••"
-                        readOnly
-                        className="credential-input"
-                      />
-                      <Button variant="outline-secondary">
-                        👁️ Reveal
-                      </Button>
-                    </InputGroup>
-                    <Form.Text className="text-warning small">
-                      Note: Owner will be asked to change password on first login
-                    </Form.Text>
-                  </div>
-
-                  <div className="credential-field mb-4">
-                    <label className="text-muted small mb-2 d-block">Login URL</label>
-                    <InputGroup>
-                      <Form.Control
-                        type="text"
-                        value="https://dashboard.foodsys.com/login"
-                        readOnly
-                        className="credential-input"
-                      />
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() =>
-                          handleCopyToClipboard(
-                            'https://dashboard.foodsys.com/login',
-                            'url'
-                          )
-                        }
-                      >
-                        {copiedId === 'url' ? '✓ Copied' : '📋 Copy'}
-                      </Button>
-                    </InputGroup>
-                  </div>
-                </div>
-
-                {credentialsSent.includes(selectedRestaurant.id) && (
-                  <Alert variant="success" className="mb-3">
-                    ✓ Credentials were sent on{' '}
-                    {new Date().toLocaleDateString()}
-                  </Alert>
-                )}
-
-                <div className="d-flex gap-2">
-                  <Button
-                    variant="primary"
-                    className="flex-grow-1"
-                    onClick={() => handleSendCredentials(selectedRestaurant.id)}
-                    disabled={credentialsSent.includes(selectedRestaurant.id)}
-                  >
-                    {credentialsSent.includes(selectedRestaurant.id)
-                      ? '📧 Sent'
-                      : '✉️ Send Credentials'}
-                  </Button>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() =>
-                      handleResendCredentials(selectedRestaurant.id)
-                    }
-                  >
-                    🔄 Resend
-                  </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          ) : (
-            <Card className="credentials-detail-card shadow-sm">
-              <Card.Body className="text-center text-muted py-5">
-                <p>Select a restaurant to manage credentials</p>
-              </Card.Body>
-            </Card>
-          )}
+        <div style={{ overflowX:"auto" }}>
+          <table className="sa-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Last Login</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {creds.map((c, i) => (
+                <tr key={c.id}>
+                  <td>
+                    <div className="sa-user-cell">
+                      <div className="sa-user-avatar" style={{ background: c.role==="super_admin"?"var(--gold)":"var(--blue)", color: c.role==="super_admin"?"var(--dark)":"#fff" }}>
+                        {c.name[0]}
+                      </div>
+                      <strong>{c.name}</strong>
+                    </div>
+                  </td>
+                  <td>{c.email}</td>
+                  <td>{roleBadge(c.role)}</td>
+                  <td>{c.lastLogin}</td>
+                  <td>
+                    <span className={`sa-badge ${c.status==="active"?"sa-badge-green":"sa-badge-grey"}`}>
+                      {c.status==="active"?"● Active":"○ Inactive"}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="sa-action-group">
+                      <button className="sa-icon-btn edit" title="Edit" onClick={() => showToast("Edit coming soon","warning")}>
+                        <i className="fa-solid fa-pen" />
+                      </button>
+                      <button className={`sa-icon-btn ${c.status==="active"?"discard":"restore"}`} title="Toggle status" onClick={() => toggleStatus(c.id)}>
+                        <i className={`fa-solid fa-${c.status==="active"?"pause":"play"}`} />
+                      </button>
+                      {c.role !== "super_admin" && (
+                        <button className="sa-icon-btn delete" title="Remove" onClick={() => deleteCred(c.id)}>
+                          <i className="fa-solid fa-trash" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Credentials Template */}
-      {selectedRestaurant && (
-        <Card className="mt-4 credential-email-template shadow-sm">
-          <Card.Header className="bg-secondary text-white">
-            <h5 className="mb-0">Email Template Preview</h5>
-          </Card.Header>
-          <Card.Body>
-            <div className="email-template">
-              <p>
-                <strong>Subject:</strong> Your Restaurant Account Credentials - FoodSys Platform
-              </p>
-              <hr />
-              <p>Dear {selectedRestaurant.name},</p>
-              <p>Welcome to the FoodSys Platform! Your restaurant account has been successfully created.</p>
-              <div className="template-credentials bg-light p-3 rounded mb-3">
-                <p className="mb-2">
-                  <strong>Login Email:</strong> {selectedRestaurant.owner_email}
-                </p>
-                <p className="mb-0">
-                  <strong>Temporary Password:</strong> [Will be provided separately]
-                </p>
+      {/* API Key section */}
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div className="sa-card-title">
+            <i className="fa-solid fa-shield-halved" style={{ color:"var(--blue)", marginRight:8 }} />
+            API Keys
+          </div>
+        </div>
+        <div style={{ padding:"22px" }}>
+          {[
+            { label:"Production API Key", key:"fds_prod_sk_••••••••••••••••••••••••••••••••" },
+            { label:"Staging API Key",    key:"fds_stage_sk_••••••••••••••••••••••••••••••" },
+          ].map((k) => (
+            <div key={k.label} style={{ marginBottom:16 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:"var(--muted)", marginBottom:6, textTransform:"uppercase" }}>{k.label}</div>
+              <div style={{ display:"flex", alignItems:"center", gap:10, background:"var(--bg)", border:"1px solid var(--border)", borderRadius:10, padding:"10px 14px" }}>
+                <i className="fa-solid fa-key" style={{ color:"var(--gold)" }} />
+                <code style={{ fontSize:13, flex:1, color:"var(--text)" }}>{k.key}</code>
+                <button className="sa-btn sa-btn-outline sa-btn-sm" onClick={() => showToast("API Key copied!", "success")}>
+                  <i className="fa-solid fa-copy" /> Copy
+                </button>
+                <button className="sa-btn sa-btn-sm" style={{ background:"var(--red)", color:"#fff" }} onClick={() => showToast("Key regenerated!", "warning")}>
+                  <i className="fa-solid fa-rotate" /> Regenerate
+                </button>
               </div>
-              <p>
-                <strong>Dashboard URL:</strong>{' '}
-                <a href="https://dashboard.foodsys.com/login">
-                  https://dashboard.foodsys.com/login
-                </a>
-              </p>
-              <p>
-                Please log in with your credentials and update your password on first login.
-              </p>
-              <p>For support, contact: support@foodsys.com</p>
             </div>
-          </Card.Body>
-        </Card>
-      )}
-    </div>
-  );
-};
+          ))}
+        </div>
+      </div>
 
-export default CredentialsManagement;
+      {/* Add Admin Modal */}
+      {showAdd && (
+        <div className="sa-modal-overlay" onClick={(e) => e.target===e.currentTarget && setShowAdd(false)}>
+          <div className="sa-modal">
+            <div className="sa-modal-title">
+              <i className="fa-solid fa-user-plus" style={{ color:"var(--gold)", marginRight:8 }} />
+              Add Admin Credential
+            </div>
+            <div className="sa-modal-sub">Create a new admin login for the FOODOS Super Admin panel.</div>
+
+            <div className="sa-form-row">
+              <div className="sa-form-group">
+                <label>Full Name *</label>
+                <input placeholder="e.g. Ops Manager" value={newCred.name} onChange={set("name")} />
+              </div>
+              <div className="sa-form-group">
+                <label>Role *</label>
+                <select value={newCred.role} onChange={set("role")}>
+                  {ROLES.map((r) => <option key={r}>{r}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="sa-form-group" style={{ marginBottom:16 }}>
+              <label>Email Address *</label>
+              <input type="email" placeholder="admin@foodos.com" value={newCred.email} onChange={set("email")} />
+            </div>
+
+            <div className="sa-form-group" style={{ marginBottom:0, position:"relative" }}>
+              <label>Password *</label>
+              <input
+                type={showPwd ? "text" : "password"}
+                placeholder="Min 8 characters"
+                value={newCred.password}
+                onChange={set("password")}
+                style={{ paddingRight:40 }}
+              />
+              <i
+                className={`fa-solid fa-eye${showPwd?"-slash":""}`}
+                onClick={() => setShowPwd((p)=>!p)}
+                style={{ position:"absolute", right:14, top:36, color:"var(--muted)", cursor:"pointer" }}
+              />
+            </div>
+
+            <div className="sa-modal-footer">
+              <button className="sa-btn sa-btn-outline" onClick={() => setShowAdd(false)}>Cancel</button>
+              <button className="sa-btn sa-btn-gold" onClick={addCred}>
+                <i className="fa-solid fa-check" /> Add Admin
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

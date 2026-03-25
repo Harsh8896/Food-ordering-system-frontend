@@ -1,208 +1,211 @@
-import React, { useState } from 'react';
-import { Table, Badge, Button, ButtonGroup, Modal, Form } from 'react-bootstrap';
+// RestaurantListTable.jsx
+import { useState } from "react";
+import { ac } from "./superadminData";
+import RestaurantOnboardingForm from "./RestaurantOnboardingForm";
+import "./superadmin.css";
 
-const RestaurantListTable = ({ restaurants, onEdit, onDelete, onSuspend }) => {
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [editFormData, setEditFormData] = useState({});
+function Stars({ n }) {
+  return (
+    <span className="sa-stars">
+      {[1,2,3,4,5].map((i) => (
+        <i key={i} className={`fa-${i <= Math.round(n) ? "solid" : "regular"} fa-star`} style={{ fontSize: 12 }} />
+      ))}
+    </span>
+  );
+}
 
-  const handleEditClick = (restaurant) => {
-    setSelectedRestaurant(restaurant);
-    setEditFormData(restaurant);
-    setShowEditModal(true);
-  };
+export default function RestaurantListTable({ restaurants, onDiscard, onDelete, onAdd, showToast }) {
+  const [search,      setSearch]      = useState("");
+  const [filterTab,   setFilterTab]   = useState("all");
+  const [showAdd,     setShowAdd]     = useState(false);
+  const [discardId,   setDiscardId]   = useState(null);
+  const [deleteId,    setDeleteId]    = useState(null);
 
-  const handleDeleteClick = (restaurant) => {
-    setSelectedRestaurant(restaurant);
-    setShowDeleteModal(true);
-  };
+  const filtered = restaurants.filter((r) => {
+    const matchTab = filterTab === "all" || r.status === filterTab;
+    const q = search.toLowerCase();
+    const matchSearch = !q || r.name.toLowerCase().includes(q) || r.owner.toLowerCase().includes(q) || r.city.toLowerCase().includes(q);
+    return matchTab && matchSearch;
+  });
 
-  const handleConfirmDelete = () => {
-    if (selectedRestaurant) {
-      onDelete(selectedRestaurant.id);
-      setShowDeleteModal(false);
-      setSelectedRestaurant(null);
-    }
-  };
-
-  const handleSaveEdit = () => {
-    if (selectedRestaurant) {
-      onEdit(selectedRestaurant.id, editFormData);
-      setShowEditModal(false);
-      setSelectedRestaurant(null);
-    }
-  };
-
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const getStatusBadge = (status) => {
-    return status === 'active' ? (
-      <Badge bg="success">Active</Badge>
-    ) : (
-      <Badge bg="danger">Suspended</Badge>
-    );
+  const statusBadge = (s) => {
+    if (s === "active")  return <span className="sa-badge sa-badge-green">● Active</span>;
+    if (s === "pending") return <span className="sa-badge sa-badge-orange">⏳ Pending</span>;
+    return                      <span className="sa-badge sa-badge-grey">○ Inactive</span>;
   };
 
   return (
     <>
-      <div className="table-responsive restaurant-table-wrapper">
-        <Table hover className="restaurant-table">
-          <thead>
-            <tr>
-              <th>Restaurant Name</th>
-              <th>Owner Email</th>
-              <th>Location</th>
-              <th>Plan</th>
-              <th>Status</th>
-              <th>Created Date</th>
-              <th>Revenue</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {restaurants.length > 0 ? (
-              restaurants.map(restaurant => (
-                <tr key={restaurant.id}>
-                  <td className="fw-bold">{restaurant.name}</td>
-                  <td>{restaurant.owner_email}</td>
-                  <td>{restaurant.location}</td>
-                  <td>
-                    <Badge bg="info">{restaurant.subscription_plan}</Badge>
-                  </td>
-                  <td>{getStatusBadge(restaurant.status)}</td>
-                  <td>{restaurant.created_date}</td>
-                  <td className="text-success fw-bold">{restaurant.revenue}</td>
-                  <td>
-                    <ButtonGroup size="sm">
-                      <Button
-                        variant="outline-primary"
-                        title="Edit"
-                        onClick={() => handleEditClick(restaurant)}
-                      >
-                        ✏️
-                      </Button>
-                      <Button
-                        variant={
-                          restaurant.status === 'active'
-                            ? 'outline-warning'
-                            : 'outline-success'
-                        }
-                        title={
-                          restaurant.status === 'active' ? 'Suspend' : 'Activate'
-                        }
-                        onClick={() => onSuspend(restaurant.id)}
-                      >
-                        {restaurant.status === 'active' ? '🚫' : '✓'}
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        title="Delete"
-                        onClick={() => handleDeleteClick(restaurant)}
-                      >
-                        🗑️
-                      </Button>
-                    </ButtonGroup>
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div>
+            <div className="sa-card-title">All Restaurants</div>
+            <div className="sa-card-sub">{restaurants.length} restaurants on platform</div>
+          </div>
+          <div className="sa-card-actions">
+            <div className="sa-search-box">
+              <i className="fa-solid fa-magnifying-glass" style={{ color: "var(--muted)", fontSize: 13 }} />
+              <input
+                placeholder="Search restaurant…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <button className="sa-btn sa-btn-gold" onClick={() => setShowAdd(true)}>
+              <i className="fa-solid fa-plus" /> Add Restaurant
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ padding: "14px 22px 0" }}>
+          <div className="sa-tab-bar">
+            {[
+              { id: "all",     label: `All (${restaurants.length})` },
+              { id: "active",  label: `Active (${restaurants.filter(r=>r.status==="active").length})` },
+              { id: "pending", label: `Pending (${restaurants.filter(r=>r.status==="pending").length})` },
+              { id: "inactive",label: `Inactive (${restaurants.filter(r=>r.status==="inactive").length})` },
+            ].map((t) => (
+              <button
+                key={t.id}
+                className={`sa-tab${filterTab === t.id ? " active" : ""}`}
+                onClick={() => setFilterTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table className="sa-table">
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>Owner</th>
+                <th>Category</th>
+                <th>City</th>
+                <th>Rating</th>
+                <th>Orders</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="sa-empty">
+                      <i className="fa-solid fa-store" />
+                      <p>No restaurants found</p>
+                    </div>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="8" className="text-center text-muted py-4">
-                  No restaurants found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+              )}
+              {filtered.map((r, i) => (
+                <tr key={r.id}>
+                  <td>
+                    <div className="sa-rest-cell">
+                      <div className="sa-rest-avatar" style={{ background: ac(i) }}>
+                        {r.name[0]}
+                      </div>
+                      <div>
+                        <div className="sa-rest-name">{r.name}</div>
+                        <div className="sa-rest-cat">{r.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{r.owner}</td>
+                  <td>{r.cat}</td>
+                  <td>{r.city}</td>
+                  <td><Stars n={r.rating} /></td>
+                  <td><strong>{r.orders}</strong></td>
+                  <td>{statusBadge(r.status)}</td>
+                  <td>
+                    <div className="sa-action-group">
+                      <button className="sa-icon-btn view" title="View" onClick={() => showToast(`Viewing ${r.name}`, "success")}>
+                        <i className="fa-solid fa-eye" />
+                      </button>
+                      <button className="sa-icon-btn edit" title="Edit" onClick={() => showToast("Edit feature coming soon", "warning")}>
+                        <i className="fa-solid fa-pen" />
+                      </button>
+                      <button className="sa-icon-btn discard" title="Discard (Soft Remove)" onClick={() => setDiscardId(r.id)}>
+                        <i className="fa-solid fa-box-archive" />
+                      </button>
+                      <button className="sa-icon-btn delete" title="Delete Permanently" onClick={() => setDeleteId(r.id)}>
+                        <i className="fa-solid fa-trash" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Edit Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Restaurant</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Restaurant Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={editFormData.name || ''}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Owner Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="owner_email"
-                value={editFormData.owner_email || ''}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Location</Form.Label>
-              <Form.Control
-                type="text"
-                name="location"
-                value={editFormData.location || ''}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Subscription Plan</Form.Label>
-              <Form.Select
-                name="subscription_plan"
-                value={editFormData.subscription_plan || ''}
-                onChange={handleEditChange}
-              >
-                <option value="Basic">Basic</option>
-                <option value="Standard">Standard</option>
-                <option value="Premium">Premium</option>
-              </Form.Select>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleSaveEdit}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Info banner */}
+      <div className="sa-info-banner">
+        <i className="fa-solid fa-circle-info" style={{ color: "var(--gold)" }} />
+        <span>
+          <strong>Discard</strong> = soft-remove (hides from user app, restorable). &nbsp;
+          <strong>Delete</strong> = permanently removed and cannot be recovered.
+        </span>
+      </div>
 
-      {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-        <Modal.Header closeButton className="border-danger">
-          <Modal.Title className="text-danger">Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Are you sure you want to delete <strong>{selectedRestaurant?.name}</strong>? 
-            This action is permanent and cannot be undone.
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleConfirmDelete}>
-            Delete Restaurant
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Add Modal */}
+      {showAdd && (
+        <RestaurantOnboardingForm
+          onAdd={onAdd}
+          onClose={() => setShowAdd(false)}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Discard Confirm */}
+      {discardId && (
+        <div className="sa-modal-overlay" onClick={(e) => e.target === e.currentTarget && setDiscardId(null)}>
+          <div className="sa-modal sa-confirm-modal">
+            <div className="sa-confirm-icon warning">
+              <i className="fa-solid fa-box-archive" />
+            </div>
+            <div className="sa-confirm-title">Discard Restaurant?</div>
+            <div className="sa-confirm-msg">
+              This restaurant will be <strong>hidden from the user app</strong> and moved to Discarded. You can restore it later from the Discarded section.
+            </div>
+            <div className="sa-confirm-footer">
+              <button className="sa-btn sa-btn-outline" onClick={() => setDiscardId(null)}>Cancel</button>
+              <button className="sa-btn" style={{ background:"var(--orange)", color:"#fff" }}
+                onClick={() => { onDiscard(discardId); setDiscardId(null); }}>
+                <i className="fa-solid fa-box-archive" /> Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm */}
+      {deleteId && (
+        <div className="sa-modal-overlay" onClick={(e) => e.target === e.currentTarget && setDeleteId(null)}>
+          <div className="sa-modal sa-confirm-modal">
+            <div className="sa-confirm-icon danger">
+              <i className="fa-solid fa-triangle-exclamation" />
+            </div>
+            <div className="sa-confirm-title">Permanently Delete?</div>
+            <div className="sa-confirm-msg">
+              This will <strong>permanently remove</strong> the restaurant and all its data from the system. This action <strong>cannot be undone</strong>.
+            </div>
+            <div className="sa-confirm-footer">
+              <button className="sa-btn sa-btn-outline" onClick={() => setDeleteId(null)}>Cancel</button>
+              <button className="sa-btn sa-btn-red"
+                onClick={() => { onDelete(deleteId); setDeleteId(null); }}>
+                <i className="fa-solid fa-trash" /> Yes, Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
-};
-
-export default RestaurantListTable;
+}

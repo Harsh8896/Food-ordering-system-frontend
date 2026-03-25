@@ -1,234 +1,102 @@
-import React, { useState } from 'react';
-import { Modal, Form, Button } from 'react-bootstrap';
+// RestaurantOnboardingForm.jsx
+import { useState } from "react";
+import "./superadmin.css";
 
-const RestaurantOnboardingForm = ({ show, onHide, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    owner_email: '',
-    owner_password: '',
-    location: '',
-    subscription_plan: 'Standard',
-    subscription_expiry: '',
-  });
+const INIT = { name: "", owner: "", email: "", phone: "", city: "", cat: "General", desc: "" };
 
-  const [errors, setErrors] = useState({});
+export default function RestaurantOnboardingForm({ onAdd, onClose, showToast }) {
+  const [form, setForm] = useState(INIT);
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const subscriptionPlans = [
-    { value: 'Basic', label: 'Basic ($99/month)' },
-    { value: 'Standard', label: 'Standard ($199/month)' },
-    { value: 'Premium', label: 'Premium ($399/month)' },
-  ];
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Restaurant name is required';
-    }
-
-    if (!formData.owner_email.trim()) {
-      newErrors.owner_email = 'Owner email is required';
-    } else if (!isValidEmail(formData.owner_email)) {
-      newErrors.owner_email = 'Please enter a valid email';
-    }
-
-    if (!formData.owner_password.trim()) {
-      newErrors.owner_password = 'Password is required';
-    } else if (formData.owner_password.length < 8) {
-      newErrors.owner_password = 'Password must be at least 8 characters';
-    }
-
-    if (!formData.location.trim()) {
-      newErrors.location = 'Location is required';
-    }
-
-    if (!formData.subscription_expiry) {
-      newErrors.subscription_expiry = 'Expiry date is required';
-    }
-
-    return newErrors;
-  };
-
-  const isValidEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: '',
-      }));
-    }
-  };
-
-  const generatePassword = () => {
-    const length = 12;
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let password = '';
-    for (let i = 0; i < length; i++) {
-      password += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    setFormData(prev => ({
-      ...prev,
-      owner_password: password,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = validateForm();
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+  const handleSubmit = () => {
+    if (!form.name || !form.owner || !form.email) {
+      showToast("Please fill required fields.", "warning");
       return;
     }
-
-    onSubmit(formData);
-
-    setFormData({
-      name: '',
-      owner_email: '',
-      owner_password: '',
-      location: '',
-      subscription_plan: 'Standard',
-      subscription_expiry: '',
-    });
-    setErrors({});
+    onAdd({ ...form, joined: new Date().toLocaleString("en-IN", { month: "short", year: "numeric" }) });
+    setForm(INIT);
+    if (onClose) onClose();
   };
 
-  return (
-    <Modal show={show} onHide={onHide} size="lg" centered>
-      <Modal.Header closeButton className="border-bottom-2 bg-light">
-        <Modal.Title className="fw-bold">Restaurant Onboarding</Modal.Title>
-      </Modal.Header>
-      <Modal.Body className="p-4">
-        <Form onSubmit={handleSubmit}>
+  const body = (
+    <div>
+      <div className="sa-modal-title">
+        <i className="fa-solid fa-circle-plus" style={{ color: "var(--gold)", marginRight: 8 }} />
+        Onboard New Restaurant
+      </div>
+      <div className="sa-modal-sub">Fill in the details to register a restaurant on the platform.</div>
 
-          {/* Restaurant Name */}
-          <Form.Group className="mb-4">
-            <Form.Label className="fw-bold">Restaurant Name</Form.Label>
-            <Form.Control
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter restaurant name"
-              className={errors.name ? 'is-invalid' : ''}
-            />
-            {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
-          </Form.Group>
+      <div className="sa-form-row">
+        <div className="sa-form-group">
+          <label>Restaurant Name *</label>
+          <input placeholder="e.g. Spice Villa" value={form.name} onChange={set("name")} />
+        </div>
+        <div className="sa-form-group">
+          <label>Owner Name *</label>
+          <input placeholder="e.g. Raj Kumar" value={form.owner} onChange={set("owner")} />
+        </div>
+      </div>
 
-          {/* Owner Email */}
-          <Form.Group className="mb-4">
-            <Form.Label className="fw-bold">Owner Email</Form.Label>
-            <Form.Control
-              type="email"
-              name="owner_email"
-              value={formData.owner_email}
-              onChange={handleChange}
-              placeholder="owner@restaurant.com"
-              className={errors.owner_email ? 'is-invalid' : ''}
-            />
-            {errors.owner_email && (
-              <Form.Text className="text-danger">{errors.owner_email}</Form.Text>
-            )}
-          </Form.Group>
+      <div className="sa-form-row">
+        <div className="sa-form-group">
+          <label>Owner Email *</label>
+          <input type="email" placeholder="owner@restaurant.com" value={form.email} onChange={set("email")} />
+        </div>
+        <div className="sa-form-group">
+          <label>Phone Number</label>
+          <input placeholder="98XXXXXXXX" value={form.phone} onChange={set("phone")} />
+        </div>
+      </div>
 
-          {/* Password */}
-          <Form.Group className="mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <Form.Label className="fw-bold mb-0">Temporary Password</Form.Label>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={generatePassword}
-                type="button"
-              >
-                Generate
-              </Button>
-            </div>
-            <Form.Control
-              type="text"
-              name="owner_password"
-              value={formData.owner_password}
-              onChange={handleChange}
-              placeholder="Temporary password"
-              className={errors.owner_password ? 'is-invalid' : ''}
-            />
-            {errors.owner_password && (
-              <Form.Text className="text-danger">{errors.owner_password}</Form.Text>
-            )}
-            <Form.Text className="text-muted">
-              The owner will change this on their first login
-            </Form.Text>
-          </Form.Group>
+      <div className="sa-form-row">
+        <div className="sa-form-group">
+          <label>City</label>
+          <input placeholder="e.g. Prayagraj" value={form.city} onChange={set("city")} />
+        </div>
+        <div className="sa-form-group">
+          <label>Category</label>
+          <select value={form.cat} onChange={set("cat")}>
+            {["General", "Fast Food", "South Indian", "North Indian", "Italian", "Beverages", "Chinese", "Multi"].map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-          {/* Location */}
-          <Form.Group className="mb-4">
-            <Form.Label className="fw-bold">Location</Form.Label>
-            <Form.Control
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="e.g., Mumbai, Maharashtra"
-              className={errors.location ? 'is-invalid' : ''}
-            />
-            {errors.location && (
-              <Form.Text className="text-danger">{errors.location}</Form.Text>
-            )}
-          </Form.Group>
+      <div className="sa-form-group" style={{ marginBottom: 0 }}>
+        <label>Description</label>
+        <textarea placeholder="Brief description of the restaurant…" value={form.desc} onChange={set("desc")} />
+      </div>
 
-          {/* Subscription Plan */}
-          <Form.Group className="mb-4">
-            <Form.Label className="fw-bold">Subscription Plan</Form.Label>
-            <Form.Select
-              name="subscription_plan"
-              value={formData.subscription_plan}
-              onChange={handleChange}
-            >
-              {subscriptionPlans.map(plan => (
-                <option key={plan.value} value={plan.value}>
-                  {plan.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          {/* Subscription Expiry Date */}
-          <Form.Group className="mb-4">
-            <Form.Label className="fw-bold">Subscription Expiry Date</Form.Label>
-            <Form.Control
-              type="date"
-              name="subscription_expiry"
-              value={formData.subscription_expiry}
-              onChange={handleChange}
-              className={errors.subscription_expiry ? 'is-invalid' : ''}
-            />
-            {errors.subscription_expiry && (
-              <Form.Text className="text-danger">{errors.subscription_expiry}</Form.Text>
-            )}
-          </Form.Group>
-
-          <div className="d-flex gap-2 justify-content-end">
-            <Button variant="secondary" onClick={onHide}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Create Restaurant Account
-            </Button>
-          </div>
-
-        </Form>
-      </Modal.Body>
-    </Modal>
+      <div className="sa-modal-footer">
+        {onClose && (
+          <button className="sa-btn sa-btn-outline" onClick={onClose}>Cancel</button>
+        )}
+        <button className="sa-btn sa-btn-gold" onClick={handleSubmit}>
+          <i className="fa-solid fa-check" /> Add Restaurant
+        </button>
+      </div>
+    </div>
   );
-};
 
-export default RestaurantOnboardingForm;
+  // Render as modal overlay when onClose provided, else as inline card
+  if (onClose) {
+    return (
+      <div className="sa-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+        <div className="sa-modal">{body}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sa-card">
+      <div className="sa-card-header">
+        <div>
+          <div className="sa-card-title">Onboard New Restaurant</div>
+          <div className="sa-card-sub">Register a new restaurant on the FOODOS platform</div>
+        </div>
+      </div>
+      <div style={{ padding: "24px 22px" }}>{body}</div>
+    </div>
+  );
+}

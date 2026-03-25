@@ -28,7 +28,6 @@
   import FoodList from './Pages/FoodList'
   import TrackOrder from "./Pages/TrackOrder"
   import ManageReviews from "./Pages/ManageReviews"
-import SuperAdminDashboard from './components/SuperAdmin/SuperAdminDashboard'
 import ConfirmOrder from './Pages/ConfirmOrder'
 import OrderDelivered from './Pages/OrderDelivered'
 import RestaurantOwnerLogin from './components/RestaurantOwnerLogin '
@@ -36,6 +35,7 @@ import RestaurantDashboard from './Pages/RestaurantDashboard'
 import MyDeliveredOrders from "./Pages/MyDeliveredOrders";
 import MasterFoodHome from './Pages/MasterFoodHome '
 import MasterFoodDetail from './Pages/MasterFoodDetail '
+import SuperAdminDeshboard from './components/SuperAdmin/SuperAdminDashboard'
 
   const App = () => {
     return (
@@ -72,18 +72,15 @@ import MasterFoodDetail from './Pages/MasterFoodDetail '
           <Route path="/confirm-order" element={<ConfirmOrder/>} />
           <Route path="/order-delivered" element={<OrderDelivered/>} />
 
-
-
-
-
-          <Route path="/super-admin" element={<SuperAdminDashboard />} />
+          {/* <Route path="/super-admin" element={<SuperAdminDashboard />} /> */}
           <Route path="/restaurant-login" element={<RestaurantOwnerLogin />} />
-          <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
-          <Route path="/my-orders" element={<MyDeliveredOrders />} />
+          {/* <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} /> */}
+          <Route path="/my-orders" element={<MyDeliveredOrders />} /> 
 
+          <Route path="/super-admin-deshboard" element={<SuperAdminDeshboard/>}/>
 
           <Route path="/menu1" element={<MasterFoodHome />} />
-<Route path="/master-food/:id" element={<MasterFoodDetail />} />
+          <Route path="/master-food/:id" element={<MasterFoodDetail />} />
 
         </Routes>
       </BrowserRouter>
