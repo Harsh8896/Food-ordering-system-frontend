@@ -115,6 +115,9 @@ const PublicLayout = ({ children }) => {
                   <li className="nav-item mx-2">
                     <Link className="btn btn-warning btn-sm" to="/register">Register</Link>
                   </li>
+                  <li className="nav-item mx-2">
+                    <Link className="btn btn-warning btn-sm" to="/admin-login">Admin</Link>
+                  </li>
                 </>
               ) : (
                 <li className="nav-item dropdown mx-2">

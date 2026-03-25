@@ -112,6 +112,7 @@ const PaymentPage = () => {
       const result = await response.json();
       if (response.status === 200) {
         toast.success(result.message);
+        // ✅ Multiple orders handle karo
         setTimeout(() => navigate('/my-orders'), 2000);
       } else {
         toast.error(result.message || "Order failed");
@@ -119,7 +120,7 @@ const PaymentPage = () => {
     } catch {
       toast.error("Server error occurred");
     }
-  };
+};
 
   return (
     <PublicLayout>
