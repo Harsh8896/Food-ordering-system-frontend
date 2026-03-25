@@ -1,342 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Form, Button, Alert, Row, Col } from 'react-bootstrap';
+// SystemSettings.jsx
+import { useState } from "react";
+import "./superadmin.css";
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+export default function SystemSettings({ showToast }) {
+  const [general, setGeneral]   = useState({ platformName:"FOODOS", supportEmail:"support@foodos.com", currency:"INR", timezone:"Asia/Kolkata" });
+  const [notifs,  setNotifs]    = useState({ newOrder:true, newRestaurant:true, newUser:false, lowRating:true });
+  const [maint,   setMaint]     = useState(false);
 
-const SystemSettings = () => {
-  const [settings, setSettings] = useState({
-    platform_currency: 'USD',
-    currency_symbol: '$',
-    brand_name: 'FoodSys',
-    brand_logo_url: '',
-    support_email: 'support@foodsys.com',
-    support_phone: '+1-800-FOODSYS',
-    platform_timezone: 'America/New_York',
-    maintenance_mode: false,
-    enable_restaurant_registration: true,
-    max_restaurants: 500,
-  });
+  const save = (label) => showToast(`${label} saved successfully!`, "success");
 
-  const [savedAlert, setSavedAlert] = useState(false);
-  const [errorAlert, setErrorAlert] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const Toggle = ({ checked, onChange }) => (
+    <div
+      onClick={() => onChange(!checked)}
+      style={{
+        width:44, height:24, borderRadius:12, cursor:"pointer", transition:".2s",
+        background: checked ? "var(--green)" : "var(--border)",
+        position:"relative", flexShrink:0,
+      }}
+    >
+      <div style={{
+        width:18, height:18, borderRadius:"50%", background:"#fff",
+        position:"absolute", top:3, transition:".2s",
+        left: checked ? 23 : 3,
+        boxShadow:"0 1px 4px rgba(0,0,0,.2)",
+      }} />
+    </div>
+  );
 
-  // GET — page load pe settings fetch karo
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const res = await fetch(`${BASE_URL}/platform-settings/`);
-        const data = await res.json();
-        setSettings(data);
-      } catch (err) {
-        console.error('Settings fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSettings();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
-  // PUT — save button pe settings update karo
-  const handleSave = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/platform-settings/`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
-      });
-      if (res.ok) {
-        setSavedAlert(true);
-        setTimeout(() => setSavedAlert(false), 3000);
-      } else {
-        setErrorAlert(true);
-        setTimeout(() => setErrorAlert(false), 3000);
-      }
-    } catch (err) {
-      console.error('Settings save error:', err);
-      setErrorAlert(true);
-      setTimeout(() => setErrorAlert(false), 3000);
-    }
-  };
-
-  const currencies = [
-    { value: 'USD', label: 'US Dollar ($)' },
-    { value: 'EUR', label: 'Euro (€)' },
-    { value: 'GBP', label: 'British Pound (£)' },
-    { value: 'INR', label: 'Indian Rupee (₹)' },
-    { value: 'JPY', label: 'Japanese Yen (¥)' },
-  ];
-
-  const timezones = [
-    'America/New_York',
-    'America/Chicago',
-    'America/Denver',
-    'America/Los_Angeles',
-    'Europe/London',
-    'Europe/Paris',
-    'Asia/Tokyo',
-    'Asia/Dubai',
-    'Asia/Kolkata',
-    'Australia/Sydney',
-  ];
-
-  if (loading) return <p className="text-muted">Loading settings...</p>;
+  const Input = ({ label, value, onChange, type="text" }) => (
+    <div className="sa-form-group" style={{ marginBottom:16 }}>
+      <label>{label}</label>
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
 
   return (
-    <div className="system-settings">
+    <>
+      {/* General Settings */}
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div>
+            <div className="sa-card-title">
+              <i className="fa-solid fa-sliders" style={{ color:"var(--gold)", marginRight:8 }} />
+              General Settings
+            </div>
+            <div className="sa-card-sub">Platform-wide configuration</div>
+          </div>
+        </div>
+        <div style={{ padding:"24px 22px" }}>
+          <div className="sa-form-row">
+            <Input label="Platform Name" value={general.platformName} onChange={(v) => setGeneral(g=>({...g,platformName:v}))} />
+            <Input label="Support Email" value={general.supportEmail} onChange={(v) => setGeneral(g=>({...g,supportEmail:v}))} type="email" />
+          </div>
+          <div className="sa-form-row">
+            <div className="sa-form-group" style={{ marginBottom:16 }}>
+              <label>Currency</label>
+              <select value={general.currency} onChange={(e) => setGeneral(g=>({...g,currency:e.target.value}))}>
+                {["INR","USD","EUR","GBP"].map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="sa-form-group" style={{ marginBottom:16 }}>
+              <label>Timezone</label>
+              <select value={general.timezone} onChange={(e) => setGeneral(g=>({...g,timezone:e.target.value}))}>
+                {["Asia/Kolkata","Asia/Dubai","UTC","America/New_York","Europe/London"].map((t) => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+          <button className="sa-btn sa-btn-gold" onClick={() => save("General settings")}>
+            <i className="fa-solid fa-floppy-disk" /> Save Changes
+          </button>
+        </div>
+      </div>
 
-      {savedAlert && (
-        <Alert variant="success" dismissible onClose={() => setSavedAlert(false)}>
-          ✓ Settings saved successfully!
-        </Alert>
-      )}
-
-      {errorAlert && (
-        <Alert variant="danger" dismissible onClose={() => setErrorAlert(false)}>
-          ✗ Something went wrong. Try again!
-        </Alert>
-      )}
-
-      {/* Branding Settings */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-primary text-white">
-          <h5 className="mb-0">🏢 Branding Settings</h5>
-        </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Platform Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="brand_name"
-                  value={settings.brand_name}
-                  onChange={handleChange}
-                  placeholder="e.g., FoodSys"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Brand Logo URL</Form.Label>
-                <Form.Control
-                  type="url"
-                  name="brand_logo_url"
-                  value={settings.brand_logo_url}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      {/* Currency Settings */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-success text-white">
-          <h5 className="mb-0">💰 Currency Settings</h5>
-        </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Platform Currency</Form.Label>
-                <Form.Select
-                  name="platform_currency"
-                  value={settings.platform_currency}
-                  onChange={handleChange}
-                >
-                  {currencies.map(currency => (
-                    <option key={currency.value} value={currency.value}>
-                      {currency.label}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Currency Symbol</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="currency_symbol"
-                  value={settings.currency_symbol}
-                  onChange={handleChange}
-                  maxLength="3"
-                  placeholder="$"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      {/* Support Settings */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-info text-white">
-          <h5 className="mb-0">📞 Support Settings</h5>
-        </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Support Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="support_email"
-                  value={settings.support_email}
-                  onChange={handleChange}
-                  placeholder="support@example.com"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Support Phone</Form.Label>
-                <Form.Control
-                  type="tel"
-                  name="support_phone"
-                  value={settings.support_phone}
-                  onChange={handleChange}
-                  placeholder="+1-800-000-0000"
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      {/* Localization Settings */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-warning text-dark">
-          <h5 className="mb-0">🌍 Localization Settings</h5>
-        </Card.Header>
-        <Card.Body>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Platform Timezone</Form.Label>
-            <Form.Select
-              name="platform_timezone"
-              value={settings.platform_timezone}
-              onChange={handleChange}
-            >
-              {timezones.map(tz => (
-                <option key={tz} value={tz}>{tz}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Card.Body>
-      </Card>
-
-      {/* Platform Settings */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-secondary text-white">
-          <h5 className="mb-0">⚙️ Platform Settings</h5>
-        </Card.Header>
-        <Card.Body>
-          <Form.Group className="mb-3">
-            <Form.Label className="fw-bold">Maximum Restaurants</Form.Label>
-            <Form.Control
-              type="number"
-              name="max_restaurants"
-              value={settings.max_restaurants}
-              onChange={handleChange}
-              min="1"
-            />
-            <Form.Text className="text-muted small">
-              Limit the maximum number of restaurants that can register on the platform
-            </Form.Text>
-          </Form.Group>
-
-          <Form.Check
-            type="switch"
-            id="enable-registration"
-            name="enable_restaurant_registration"
-            label="Enable Restaurant Registration"
-            checked={settings.enable_restaurant_registration}
-            onChange={handleChange}
-            className="mb-3"
-          />
-
-          <Form.Check
-            type="switch"
-            id="maintenance-mode"
-            name="maintenance_mode"
-            label="Maintenance Mode (Platform will be unavailable to restaurants)"
-            checked={settings.maintenance_mode}
-            onChange={handleChange}
-            className={settings.maintenance_mode ? 'text-danger' : ''}
-          />
-        </Card.Body>
-      </Card>
-
-      {/* System Info */}
-      <Card className="settings-card shadow-sm mb-4">
-        <Card.Header className="bg-dark text-white">
-          <h5 className="mb-0">ℹ️ System Information</h5>
-        </Card.Header>
-        <Card.Body>
-          <Row>
-            <Col md={6}>
-              <div className="system-info-item mb-3">
-                <p className="text-muted small mb-1">Platform Version</p>
-                <p className="fw-bold">v1.0.0</p>
+      {/* Notifications */}
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div>
+            <div className="sa-card-title">
+              <i className="fa-solid fa-bell" style={{ color:"var(--blue)", marginRight:8 }} />
+              Notification Preferences
+            </div>
+            <div className="sa-card-sub">Control what alerts the super admin receives</div>
+          </div>
+        </div>
+        <div style={{ padding:"8px 22px 24px" }}>
+          {[
+            { key:"newOrder",      label:"New Order Placed",       sub:"Notify when any order is placed" },
+            { key:"newRestaurant", label:"New Restaurant Request",  sub:"Notify when a restaurant requests onboarding" },
+            { key:"newUser",       label:"New User Signup",         sub:"Notify when a new user registers" },
+            { key:"lowRating",     label:"Low Rating Alert",        sub:"Notify when a restaurant gets below 3★" },
+          ].map((n) => (
+            <div key={n.key} style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 0", borderBottom:"1px solid var(--border)" }}>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:700, fontSize:14 }}>{n.label}</div>
+                <div style={{ fontSize:12, color:"var(--muted)", marginTop:2 }}>{n.sub}</div>
               </div>
-              <div className="system-info-item mb-3">
-                <p className="text-muted small mb-1">API Endpoint</p>
-                <p className="fw-bold">{BASE_URL}</p>
-              </div>
-            </Col>
-            <Col md={6}>
-              <div className="system-info-item mb-3">
-                <p className="text-muted small mb-1">Last Updated</p>
-                <p className="fw-bold">{new Date().toLocaleDateString()}</p>
-              </div>
-              <div className="system-info-item mb-3">
-                <p className="text-muted small mb-1">Database Status</p>
-                <p className="fw-bold text-success">✓ Connected</p>
-              </div>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
+              <Toggle checked={notifs[n.key]} onChange={(v) => setNotifs(p=>({...p,[n.key]:v}))} />
+            </div>
+          ))}
+          <div style={{ marginTop:20 }}>
+            <button className="sa-btn sa-btn-gold" onClick={() => save("Notification settings")}>
+              <i className="fa-solid fa-floppy-disk" /> Save Preferences
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Action Buttons */}
-      <div className="d-flex gap-2 mb-4">
-        <Button variant="primary" size="lg" onClick={handleSave}>
-          💾 Save Settings
-        </Button>
-        <Button variant="outline-secondary" size="lg" onClick={() => window.location.reload()}>
-          🔄 Reset to Defaults
-        </Button>
+      {/* Maintenance Mode */}
+      <div className="sa-card">
+        <div className="sa-card-header">
+          <div>
+            <div className="sa-card-title">
+              <i className="fa-solid fa-screwdriver-wrench" style={{ color:"var(--red)", marginRight:8 }} />
+              Maintenance Mode
+            </div>
+            <div className="sa-card-sub">Take the platform offline for maintenance</div>
+          </div>
+          <Toggle checked={maint} onChange={(v) => { setMaint(v); showToast(`Maintenance mode ${v?"enabled":"disabled"}`, v?"warning":"success"); }} />
+        </div>
+        {maint && (
+          <div style={{ padding:"14px 22px", background:"rgba(255,77,79,.05)", borderTop:"1px solid rgba(255,77,79,.15)" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, color:"var(--red)", fontSize:13, fontWeight:600 }}>
+              <i className="fa-solid fa-triangle-exclamation" />
+              Platform is currently in maintenance mode. Users will see a maintenance page.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Danger Zone */}
-      <Card className="settings-card shadow-sm border-danger">
-        <Card.Header className="bg-danger text-white">
-          <h5 className="mb-0">⚠️ Danger Zone</h5>
-        </Card.Header>
-        <Card.Body>
-          <p className="text-danger fw-bold mb-3">
-            These actions cannot be undone. Proceed with caution.
-          </p>
-          <div className="d-flex gap-2">
-            <Button variant="outline-danger">🗑️ Clear All Data</Button>
-            <Button variant="outline-danger">🔐 Reset Admin Password</Button>
+      <div className="sa-card" style={{ border:"1px solid rgba(255,77,79,.3)" }}>
+        <div className="sa-card-header" style={{ background:"rgba(255,77,79,.04)" }}>
+          <div>
+            <div className="sa-card-title" style={{ color:"var(--red)" }}>
+              <i className="fa-solid fa-skull-crossbones" style={{ marginRight:8 }} />
+              Danger Zone
+            </div>
+            <div className="sa-card-sub">Irreversible actions — proceed with extreme caution</div>
           </div>
-        </Card.Body>
-      </Card>
-
-    </div>
+        </div>
+        <div style={{ padding:"22px", display:"flex", gap:12, flexWrap:"wrap" }}>
+          <button className="sa-btn sa-btn-red" onClick={() => showToast("Clear cache action triggered","warning")}>
+            <i className="fa-solid fa-broom" /> Clear Platform Cache
+          </button>
+          <button className="sa-btn" style={{ background:"var(--orange)", color:"#fff" }} onClick={() => showToast("Export initiated","success")}>
+            <i className="fa-solid fa-file-export" /> Export All Data
+          </button>
+          <button className="sa-btn sa-btn-red" onClick={() => showToast("This action requires 2FA confirmation","error")}>
+            <i className="fa-solid fa-trash-can" /> Purge All Orders
+          </button>
+        </div>
+      </div>
+    </>
   );
-};
-
-export default SystemSettings;
+}

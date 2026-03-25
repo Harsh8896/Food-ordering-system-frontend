@@ -1,168 +1,108 @@
-import React, { useState, useEffect } from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
-import {
-  ResponsiveContainer,
-  ComposedChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
-import StatCard from './StatCard';
+// PlatformOverviewChart.jsx
+import "./superadmin.css";
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const VALS = [1200, 1800, 900, 2400, 3100, 4200, 2800];
+const MAX  = Math.max(...VALS);
 
-const PlatformOverviewChart = () => {
-  const [viewMode, setViewMode] = useState('both');
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(true);
+const LEGEND = [
+  { label: "Active Restaurants", val: "5",   color: "#F5A623" },
+  { label: "Pending Approval",   val: "1",   color: "#F2994A" },
+  { label: "Discarded",          val: "2",   color: "#8A94B2" },
+];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // restaurant_id null check — 'null' string bhi handle karo
-        const rid = localStorage.getItem('restaurantId');
-        const validRid = rid && rid !== 'null' ? rid : null;
+// simple SVG donut
+function Donut({ segments, size = 90, stroke = 14 }) {
+  const r   = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const total = segments.reduce((s, g) => s + g.value, 0);
+  let offset  = 0;
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      {segments.map((seg, i) => {
+        const dash = (seg.value / total) * circ;
+        const el = (
+          <circle
+            key={i}
+            cx={size / 2}  cy={size / 2}  r={r}
+            fill="none"
+            stroke={seg.color}
+            strokeWidth={stroke}
+            strokeDasharray={`${dash} ${circ - dash}`}
+            strokeDashoffset={-offset}
+            strokeLinecap="round"
+          />
+        );
+        offset += dash;
+        return el;
+      })}
+    </svg>
+  );
+}
 
-        // metrics URL — restaurant_id sirf tab bhejo jab valid ho
-        const metricsUrl = validRid
-          ? `${BASE_URL}/dashboard_metrics/?restaurant_id=${validRid}`
-          : `${BASE_URL}/dashboard_metrics/`;
-
-        const [salesRes, metricsRes] = await Promise.all([
-          fetch(`${BASE_URL}/monthly_sales_summary/`),
-          fetch(metricsUrl),
-        ]);
-
-        const salesData = await salesRes.json();
-        const metricsData = await metricsRes.json();
-
-        const formatted = salesData.map(item => ({
-          month: item.month,
-          revenue: parseFloat(item.sales) || 0,
-          orders: 0,
-        }));
-
-        setMonthlyData(formatted);
-        setMetrics(metricsData);
-      } catch (err) {
-        console.error('Chart data fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const totalRevenue = monthlyData.reduce((sum, item) => sum + item.revenue, 0);
-  const currentMonthOrders = metrics?.total_orders || 0;
-
-  if (loading) {
-    return <p className="text-muted mt-3">Loading chart...</p>;
-  }
+export default function PlatformOverviewChart({ restaurants = [], orders = [] }) {
+  const active   = restaurants.filter(r => r.status === "active").length;
+  const pending  = restaurants.filter(r => r.status === "pending").length;
+  const totalRev = orders.length * 230; // mock
 
   return (
-    <div className="platform-overview-section mt-4">
-      <div className="section-header-inline" style={{ marginBottom: '20px' }}>
-        <h2>Platform Overview</h2>
-        <ButtonGroup size="sm">
-          <Button
-            variant={viewMode === 'revenue' ? 'primary' : 'outline-primary'}
-            onClick={() => setViewMode('revenue')}
-          >
-            Revenue View
-          </Button>
-          <Button
-            variant={viewMode === 'orders' ? 'primary' : 'outline-primary'}
-            onClick={() => setViewMode('orders')}
-          >
-            Orders View
-          </Button>
-          <Button
-            variant={viewMode === 'both' ? 'primary' : 'outline-primary'}
-            onClick={() => setViewMode('both')}
-          >
-            Both
-          </Button>
-        </ButtonGroup>
+    <div className="sa-analytics-row">
+      {/* Bar Chart – Weekly Revenue */}
+      <div className="sa-chart-card">
+        <div className="sa-chart-title">
+          <i className="fa-solid fa-chart-bar" style={{ color: "var(--gold)", marginRight: 8 }} />
+          Weekly Revenue
+        </div>
+        <div className="sa-bar-chart">
+          {VALS.map((v, i) => (
+            <div className="sa-bar-wrap" key={i}>
+              <div className="sa-bar-val">₹{(v / 1000).toFixed(1)}k</div>
+              <div className="sa-bar" style={{ height: Math.round((v / MAX) * 90) + "px" }} title={`${DAYS[i]}: ₹${v}`} />
+            </div>
+          ))}
+        </div>
+        <div className="sa-bar-labels">
+          {DAYS.map((d) => (
+            <span className="sa-bar-label" key={d}>{d}</span>
+          ))}
+        </div>
       </div>
 
-      {/* Chart */}
-      <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
-        {monthlyData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={400}>
-            <ComposedChart data={monthlyData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis
-                yAxisId="left"
-                label={{ value: 'Revenue ($)', angle: -90, position: 'insideLeft' }}
-              />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                label={{ value: 'Orders', angle: 90, position: 'insideRight' }}
-              />
-              <Tooltip
-                formatter={(value) =>
-                  value > 1000 ? `$${value.toLocaleString()}` : value.toLocaleString()
-                }
-              />
-              <Legend />
-              {(viewMode === 'revenue' || viewMode === 'both') && (
-                <Bar yAxisId="left" dataKey="revenue" fill="#0d6efd" name="Revenue ($)" />
-              )}
-              {(viewMode === 'orders' || viewMode === 'both') && (
-                <Line
-                  yAxisId="right"
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="#198754"
-                  name="Orders"
-                  strokeWidth={2}
-                />
-              )}
-            </ComposedChart>
-          </ResponsiveContainer>
-        ) : (
-          <p className="text-muted text-center py-5">
-            Koi data nahi mila — pehle kuch orders place karo
-          </p>
-        )}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="stats-grid">
-        <StatCard
-          title="Total Platform Revenue"
-          value={`$${totalRevenue.toLocaleString()}`}
-          icon="💵"
-          color="primary"
-          trend="Month sales total"
-        />
-        <StatCard
-          title="Total Orders"
-          value={currentMonthOrders.toLocaleString()}
-          icon="📦"
-          color="success"
-          trend={`Delivered: ${metrics?.food_delivered || 0}`}
-        />
-        <StatCard
-          title="Total Users"
-          value={metrics?.total_users || 0}
-          icon="👥"
-          color="info"
-          trend={`New orders: ${metrics?.new_orders || 0}`}
-        />
+      {/* Donut – Restaurant Status */}
+      <div className="sa-chart-card">
+        <div className="sa-chart-title">
+          <i className="fa-solid fa-chart-pie" style={{ color: "var(--gold)", marginRight: 8 }} />
+          Restaurant Status
+        </div>
+        <div className="sa-pie-wrap">
+          <div className="sa-donut">
+            <Donut
+              segments={[
+                { value: active  || 5, color: "#F5A623" },
+                { value: pending || 1, color: "#F2994A" },
+                { value: 2,            color: "#8A94B2" },
+              ]}
+            />
+            <div className="sa-donut-text">
+              <span className="sa-donut-num">{restaurants.length || 8}</span>
+              <span className="sa-donut-lbl">Total</span>
+            </div>
+          </div>
+          <div className="sa-pie-legend">
+            {LEGEND.map((l) => (
+              <div className="sa-legend-item" key={l.label}>
+                <span className="sa-legend-dot" style={{ background: l.color }} />
+                <span>{l.label}</span>
+                <span className="sa-legend-val">{l.val}</span>
+              </div>
+            ))}
+            <div className="sa-legend-item" style={{ marginTop: 8, paddingTop: 8, borderTop: "1px solid var(--border)" }}>
+              <span style={{ fontSize: 11, color: "var(--muted)" }}>Platform Revenue</span>
+              <span className="sa-legend-val" style={{ color: "var(--gold)" }}>₹{(totalRev || 16750).toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-export default PlatformOverviewChart;
+}
