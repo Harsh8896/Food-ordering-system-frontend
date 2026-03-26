@@ -58,22 +58,21 @@ export default function SalesReport() {
         </div>
         <table className="sa-table">
           <thead>
-            <tr><th>#</th><th>Restaurant</th><th>Category</th><th>Orders</th><th>Revenue</th><th>Share</th></tr>
+            <tr><th>#</th><th>Restaurant</th><th>Orders</th><th>Revenue</th><th>Share</th></tr>
           </thead>
           <tbody>
             {[
-              { rank:1, name:"Pizza Palace",  cat:"Italian",      orders:201, rev:18750 },
-              { rank:2, name:"Spice Garden",  cat:"South Indian", orders:124, rev:8920  },
-              { rank:3, name:"Burger Hub",    cat:"Fast Food",    orders:89,  rev:5430  },
-              { rank:4, name:"Desi Tadka",    cat:"North Indian", orders:56,  rev:3200  },
-              { rank:5, name:"Chai Break",    cat:"Beverages",    orders:67,  rev:2800  },
+              { rank:1, name:"Pizza Palace", orders:201, rev:18750 },
+              { rank:2, name:"Spice Garden", orders:124, rev:8920  },
+              { rank:3, name:"Burger Hub", orders:89,  rev:5430  },
+              { rank:4, name:"Desi Tadka", orders:56,  rev:3200  },
+              { rank:5, name:"Chai Break", orders:67,  rev:2800  },
             ].map((r) => {
               const pct = ((r.rev/39100)*100).toFixed(1);
               return (
                 <tr key={r.rank}>
                   <td><strong style={{ color:"var(--gold)" }}>#{r.rank}</strong></td>
                   <td><strong>{r.name}</strong></td>
-                  <td><span className="sa-badge sa-badge-blue">{r.cat}</span></td>
                   <td>{r.orders}</td>
                   <td><strong>₹{r.rev.toLocaleString()}</strong></td>
                   <td>

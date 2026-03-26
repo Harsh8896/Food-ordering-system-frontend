@@ -84,10 +84,8 @@ export default function RestaurantListTable({ restaurants, onDiscard, onDelete, 
               <tr>
                 <th>Restaurant</th>
                 <th>Owner</th>
-                <th>Category</th>
+                <th>phone</th>
                 <th>City</th>
-                <th>Rating</th>
-                <th>Orders</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -117,16 +115,11 @@ export default function RestaurantListTable({ restaurants, onDiscard, onDelete, 
                     </div>
                   </td>
                   <td>{r.owner}</td>
-                  <td>{r.cat}</td>
+                  <td>{r.phone}</td>
                   <td>{r.city}</td>
-                  <td><Stars n={r.rating} /></td>
-                  <td><strong>{r.orders}</strong></td>
                   <td>{statusBadge(r.status)}</td>
                   <td>
                     <div className="sa-action-group">
-                      <button className="sa-icon-btn view" title="View" onClick={() => showToast(`Viewing ${r.name}`, "success")}>
-                        <i className="fa-solid fa-eye" />
-                      </button>
                       <button className="sa-icon-btn edit" title="Edit" onClick={() => showToast("Edit feature coming soon", "warning")}>
                         <i className="fa-solid fa-pen" />
                       </button>

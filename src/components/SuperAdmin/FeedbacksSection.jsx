@@ -34,7 +34,6 @@ export default function FeedbacksSection({ feedbacks }) {
         {[
           { label:"Total Reviews", value: feedbacks.length, icon:"fa-star", color:"ic-gold" },
           { label:"Average Rating", value: `${avg} ★`,        icon:"fa-chart-bar", color:"ic-blue" },
-          { label:"5-Star Reviews", value: feedbacks.filter(f=>f.rating===5).length, icon:"fa-trophy", color:"ic-green" },
         ].map((s) => (
           <div className="sa-stat-card" key={s.label}>
             <div className={`sa-stat-icon ${s.color}`}><i className={`fa-solid ${s.icon}`} /></div>
