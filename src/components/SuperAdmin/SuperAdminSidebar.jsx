@@ -12,8 +12,6 @@ const NAV = [
     section: "Management",
     items: [
       { id: "restaurants", icon: "fa-store",       label: "Restaurants" },
-    //   { id: "users",       icon: "fa-users",       label: "All Users" },
-    //   { id: "orders",      icon: "fa-bag-shopping", label: "All Orders",    badge: "12" },
     ],
   },
   {
