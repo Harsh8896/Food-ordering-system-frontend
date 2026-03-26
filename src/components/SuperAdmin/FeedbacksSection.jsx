@@ -1,7 +1,5 @@
-// FeedbacksSection.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ac } from "./superadminData";
-
 import "./superadmin.css";
 
 function Stars({ n, size = 13 }) {
@@ -15,17 +13,60 @@ function Stars({ n, size = 13 }) {
   );
 }
 
-export default function FeedbacksSection({ feedbacks }) {
-  const [search,     setSearch]     = useState("");
-  const [minRating,  setMinRating]  = useState(0);
+export default function FeedbacksSection({ showToast }) {
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [search, setSearch] = useState("");
+  const [minRating, setMinRating] = useState(0);
+
+  // ✅ FETCH API
+  const fetchFeedbacks = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/all-reviews/");
+      const data = await res.json();
+
+      // 🔥 mapping (backend → UI)
+      const formatted = data.map((f) => ({
+  id: f.id,
+
+  user: f.user_name || "User",
+
+  // 🔥 IMPORTANT CHANGE
+  rest: f.restaurant_name || f.restaurant || "Restaurant",
+
+  text: f.comment || "",
+
+  rating: f.rating || 0,
+
+  date: f.created_at
+    ? new Date(f.created_at).toLocaleDateString()
+    : "—",
+}));
+
+      setFeedbacks(formatted);
+    } catch (err) {
+      console.error(err);
+      showToast && showToast("Failed to load feedbacks ❌", "error");
+    }
+  };
+
+  useEffect(() => {
+    fetchFeedbacks();
+  }, []);
 
   const filtered = feedbacks.filter((f) => {
     const q = search.toLowerCase();
-    const matchSearch = !q || f.user.toLowerCase().includes(q) || f.rest.toLowerCase().includes(q) || f.text.toLowerCase().includes(q);
+    const matchSearch =
+      !q ||
+      f.user.toLowerCase().includes(q) ||
+      f.rest.toLowerCase().includes(q) ||
+      f.text.toLowerCase().includes(q);
+
     return matchSearch && f.rating >= minRating;
   });
 
-  const avg = feedbacks.length ? (feedbacks.reduce((s, f) => s + f.rating, 0) / feedbacks.length).toFixed(1) : "–";
+  const avg = feedbacks.length
+    ? (feedbacks.reduce((s, f) => s + f.rating, 0) / feedbacks.length).toFixed(1)
+    : "–";
 
   return (
     <>
@@ -33,10 +74,12 @@ export default function FeedbacksSection({ feedbacks }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:16, marginBottom:20 }}>
         {[
           { label:"Total Reviews", value: feedbacks.length, icon:"fa-star", color:"ic-gold" },
-          { label:"Average Rating", value: `${avg} ★`,        icon:"fa-chart-bar", color:"ic-blue" },
+          { label:"Average Rating", value: `${avg} ★`, icon:"fa-chart-bar", color:"ic-blue" },
         ].map((s) => (
           <div className="sa-stat-card" key={s.label}>
-            <div className={`sa-stat-icon ${s.color}`}><i className={`fa-solid ${s.icon}`} /></div>
+            <div className={`sa-stat-icon ${s.color}`}>
+              <i className={`fa-solid ${s.icon}`} />
+            </div>
             <div>
               <div className="sa-stat-label">{s.label}</div>
               <div className="sa-stat-value">{s.value}</div>
@@ -51,13 +94,24 @@ export default function FeedbacksSection({ feedbacks }) {
             <div className="sa-card-title">User Feedbacks</div>
             <div className="sa-card-sub">{filtered.length} reviews shown</div>
           </div>
+
           <div className="sa-card-actions">
             <div className="sa-search-box">
               <i className="fa-solid fa-magnifying-glass" style={{ color:"var(--muted)", fontSize:13 }} />
               <input placeholder="Search feedback…" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
+
             <select
-              style={{ border:"1px solid var(--border)", borderRadius:10, padding:"8px 13px", fontSize:13, fontFamily:"Nunito,sans-serif", color:"var(--text)", background:"var(--bg)", outline:"none" }}
+              style={{
+                border:"1px solid var(--border)",
+                borderRadius:10,
+                padding:"8px 13px",
+                fontSize:13,
+                fontFamily:"Nunito,sans-serif",
+                color:"var(--text)",
+                background:"var(--bg)",
+                outline:"none"
+              }}
               value={minRating}
               onChange={(e) => setMinRating(Number(e.target.value))}
             >
@@ -80,7 +134,9 @@ export default function FeedbacksSection({ feedbacks }) {
               <div className="sa-fb-card" key={f.id}>
                 <div className="sa-fb-header">
                   <div className="sa-fb-user">
-                    <div className="sa-fb-avatar" style={{ background: ac(i) }}>{f.user[0]}</div>
+                    <div className="sa-fb-avatar" style={{ background: ac(i) }}>
+                      {f.user[0]}
+                    </div>
                     <div>
                       <div className="sa-fb-name">{f.user}</div>
                       <div className="sa-fb-rest">
@@ -91,6 +147,7 @@ export default function FeedbacksSection({ feedbacks }) {
                   </div>
                   <div className="sa-fb-date">{f.date}</div>
                 </div>
+
                 <Stars n={f.rating} />
                 <div className="sa-fb-text">{f.text}</div>
               </div>
