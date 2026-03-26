@@ -12,13 +12,13 @@ import AdminHeader                from "./AdminHeader";
 import StatCard                   from "./StatCard";
 import PlatformOverviewChart      from "./PlatformOverviewChart";
 import RestaurantListTable        from "./RestaurantListTable";
-import RestaurantOnboardingForm   from "./RestaurantOnboardingForm";
+// import RestaurantOnboardingForm   from "./RestaurantOnboardingForm";
 import DiscardedRestaurants       from "./DiscardedRestaurants";
-import UsersTable                 from "./UsersTable";
-import OrdersSection              from "./OrdersSection";
+// import UsersTable                 from "./UsersTable";
+// import OrdersSection              from "./OrdersSection";
 import FeedbacksSection           from "./FeedbacksSection";
 import SalesReport                from "./SalesReport";
-import CredentialsManagement      from "./CredentialsManagement";
+// import CredentialsManagement      from "./CredentialsManagement";
 import SystemSettings             from "./SystemSettings";
 
 // ── seed data (inline for standalone use; move to superadminData.jsx for real app) ──
@@ -89,7 +89,6 @@ function DashboardHome({ restaurants, discarded, users, orders, feedbacks }) {
         <StatCard icon="fa-bag-shopping"    iconColor="ic-green"  label="Total Orders"      value={orders.length}      change="+3 today"      up />
         <StatCard icon="fa-indian-rupee-sign" iconColor="ic-red"  label="Total Revenue"     value="₹39.1k"            change="+8.2% MoM"     up />
         <StatCard icon="fa-circle-check"    iconColor="ic-green"  label="Active Restaurants" value={active}            change={`${pending} pending`} up={false} />
-        <StatCard icon="fa-star"            iconColor="ic-gold"   label="Avg Platform Rating" value="4.2★"             change="Top: Spice Garden 4.7★" up />
       </div>
 
       {/* Charts */}
@@ -210,13 +209,13 @@ export default function SuperAdminDashboard() {
             />
           )}
 
-          {active === "users" && (
+          {/* {active === "users" && (
             <UsersTable users={SEED_USERS} showToast={showToast} />
-          )}
+          )} */}
 
-          {active === "orders" && (
+          {/* {active === "orders" && (
             <OrdersSection orders={SEED_ORDERS} />
-          )}
+          )} */}
 
           {active === "feedbacks" && (
             <FeedbacksSection feedbacks={SEED_FB} />
@@ -234,16 +233,16 @@ export default function SuperAdminDashboard() {
             />
           )}
 
-          {active === "onboarding" && (
+          {/* {active === "onboarding" && (
             <RestaurantOnboardingForm
               onAdd={addRestaurant}
               showToast={showToast}
             />
-          )}
+          )} */}
 
-          {active === "credentials" && (
+          {/* {active === "credentials" && (
             <CredentialsManagement showToast={showToast} />
-          )}
+          )} */}
 
           {active === "settings" && (
             <SystemSettings showToast={showToast} />

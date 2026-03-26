@@ -12,8 +12,8 @@ const NAV = [
     section: "Management",
     items: [
       { id: "restaurants", icon: "fa-store",       label: "Restaurants" },
-      { id: "users",       icon: "fa-users",       label: "All Users" },
-      { id: "orders",      icon: "fa-bag-shopping", label: "All Orders",    badge: "12" },
+    //   { id: "users",       icon: "fa-users",       label: "All Users" },
+    //   { id: "orders",      icon: "fa-bag-shopping", label: "All Orders",    badge: "12" },
     ],
   },
   {
@@ -27,8 +27,8 @@ const NAV = [
     section: "System",
     items: [
       { id: "discarded",    icon: "fa-box-archive", label: "Discarded" },
-      { id: "onboarding",   icon: "fa-circle-plus", label: "Onboard Restaurant" },
-      { id: "credentials",  icon: "fa-key",         label: "Credentials" },
+      // { id: "onboarding",   icon: "fa-circle-plus", label: "Onboard Restaurant" },
+      // { id: "credentials",  icon: "fa-key",         label: "Credentials" },
       { id: "settings",     icon: "fa-gear",        label: "Settings" },
     ],
   },
