@@ -18,7 +18,6 @@ const NAV = [
     section: "Insights",
     items: [
       { id: "feedbacks", icon: "fa-star",          label: "User Feedbacks", badge: "5" },
-      { id: "sales",     icon: "fa-chart-line",    label: "Sales Report" },
     ],
   },
   {

@@ -17,12 +17,15 @@ import DiscardedRestaurants       from "./DiscardedRestaurants";
 // import UsersTable                 from "./UsersTable";
 // import OrdersSection              from "./OrdersSection";
 import FeedbacksSection           from "./FeedbacksSection";
-import SalesReport                from "./SalesReport";
 // import CredentialsManagement      from "./CredentialsManagement";
 import SystemSettings             from "./SystemSettings";
 
 // ── seed data (inline for standalone use; move to superadminData.jsx for real app) ──
 const AC = ["#F5A623","#2D9CDB","#27AE60","#9B51E0","#FF4D4F","#F2994A","#1A2040","#0F6E56"];
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONTHLY = [8200, 11400, 9800, 14200, 16800, 13600, 19200, 21000, 18400, 22800, 25600, 16750];
+const MAX = Math.max(...MONTHLY);
 
 const SEED_REST = [
   { id:1, name:"Divyans Kitchen", owner:"Divyans Patel", cat:"Multi",        city:"Prayagraj", rating:4.2, status:"active",  orders:3,   email:"divyans@gmail.com",    phone:"9876543210", joined:"Jan 2026" },
@@ -66,6 +69,10 @@ const SEED_FB = [
 
 // ── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ toast }) {
+  const total = MONTHLY.reduce((a,b)=>a+b,0);
+  const thisMonth = MONTHLY[2];
+  const growth = (((MONTHLY[2]-MONTHLY[1])/MONTHLY[1])*100).toFixed(1);
+
   const icons = { success:"fa-circle-check", error:"fa-circle-xmark", warning:"fa-triangle-exclamation" };
   return (
     <div className={`sa-toast ${toast.type}${toast.show?" show":""}`}>
@@ -88,58 +95,67 @@ function DashboardHome({ restaurants, discarded, users, orders, feedbacks }) {
         <StatCard icon="fa-users"           iconColor="ic-blue"   label="Total Users"       value={users.length}       change="+2 this week"  up />
         <StatCard icon="fa-bag-shopping"    iconColor="ic-green"  label="Total Orders"      value={orders.length}      change="+3 today"      up />
         <StatCard icon="fa-indian-rupee-sign" iconColor="ic-red"  label="Total Revenue"     value="₹39.1k"            change="+8.2% MoM"     up />
-        <StatCard icon="fa-circle-check"    iconColor="ic-green"  label="Active Restaurants" value={active}            change={`${pending} pending`} up={false} />
+        {/* <StatCard icon="fa-circle-check"    iconColor="ic-green"  label="Active Restaurants" value={active}            change={`${pending} pending`} up={false} /> */}
       </div>
 
-      {/* Charts */}
-      <PlatformOverviewChart restaurants={restaurants} orders={orders} />
-
-      {/* Recent restaurants + feedbacks */}
-      <div className="sa-analytics-row">
-        <div className="sa-card">
-          <div className="sa-card-header">
-            <div className="sa-card-title">Recent Restaurants</div>
-            <span className="sa-badge sa-badge-gold">{restaurants.length} total</span>
+            {/* Bar chart – Monthly */}
+      <div className="sa-chart-card" style={{ marginBottom:22 }}>
+        <div className="sa-chart-title">
+          <i className="fa-solid fa-chart-column" style={{ color:"var(--gold)", marginRight:8 }} />
+          Monthly Revenue Breakdown
+        </div>
+        <div className="sa-bar-chart" style={{ height:120 }}>
+          {MONTHLY.map((v, i) => (
+            <div className="sa-bar-wrap" key={i}>
+              <div className="sa-bar-val">₹{(v/1000).toFixed(0)}k</div>
+              <div className="sa-bar" style={{ height: Math.round((v/MAX)*110)+"px" }} title={`${MONTHS[i]}: ₹${v}`} />
+            </div>
+          ))}
+        </div>
+        <div className="sa-bar-labels">
+          {MONTHS.map((m) => <span className="sa-bar-label" key={m}>{m}</span>)}
+        </div>
+      </div>
+      {/* Top restaurants by revenue */}
+       <div className="sa-card">
+        <div className="sa-card-header">
+          <div className="sa-card-title">
+            <i className="fa-solid fa-trophy" style={{ color:"var(--gold)", marginRight:8 }} />
+            Top Restaurants by Revenue
           </div>
-          <table className="sa-table">
-            <thead><tr><th>Name</th><th>Orders</th><th>Status</th></tr></thead>
-            <tbody>
-              {restaurants.slice(0,5).map((r,i)=>(
-                <tr key={r.id}>
+        </div>
+        <table className="sa-table">
+          <thead>
+            <tr><th>#</th><th>Restaurant</th><th>Orders</th><th>Revenue</th><th>Share</th></tr>
+          </thead>
+          <tbody>
+            {[
+              { rank:1, name:"Pizza Palace", orders:201, rev:18750 },
+              { rank:2, name:"Spice Garden", orders:124, rev:8920  },
+              { rank:3, name:"Burger Hub", orders:89,  rev:5430  },
+              { rank:4, name:"Desi Tadka", orders:56,  rev:3200  },
+              { rank:5, name:"Chai Break", orders:67,  rev:2800  },
+            ].map((r) => {
+              const pct = ((r.rev/39100)*100).toFixed(1);
+              return (
+                <tr key={r.rank}>
+                  <td><strong style={{ color:"var(--gold)" }}>#{r.rank}</strong></td>
+                  <td><strong>{r.name}</strong></td>
+                  <td>{r.orders}</td>
+                  <td><strong>₹{r.rev.toLocaleString()}</strong></td>
                   <td>
-                    <div className="sa-rest-cell">
-                      <div className="sa-rest-avatar" style={{ background: AC[i%AC.length], width:30, height:30, fontSize:12 }}>{r.name[0]}</div>
-                      <div>
-                        <div className="sa-rest-name">{r.name}</div>
-                        <div className="sa-rest-cat">{r.owner}</div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{ flex:1, height:6, background:"var(--bg)", borderRadius:4, overflow:"hidden" }}>
+                        <div style={{ width:`${pct}%`, height:"100%", background:"var(--gold)", borderRadius:4 }} />
                       </div>
+                      <span style={{ fontSize:11, color:"var(--muted)", fontWeight:700 }}>{pct}%</span>
                     </div>
                   </td>
-                  <td>{r.orders}</td>
-                  <td><span className={`sa-badge ${r.status==="active"?"sa-badge-green":r.status==="pending"?"sa-badge-orange":"sa-badge-grey"}`}>{r.status}</span></td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="sa-card">
-          <div className="sa-card-header">
-            <div className="sa-card-title">Recent Feedbacks</div>
-          </div>
-          <div>
-            {feedbacks.slice(0,4).map((f,i)=>(
-              <div key={f.id} style={{ padding:"13px 20px", borderBottom:"1px solid var(--border)" }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                  <strong style={{ fontSize:13 }}>{f.user}</strong>
-                  <span style={{ color:"var(--gold)", fontSize:12 }}>{"★".repeat(f.rating)}{"☆".repeat(5-f.rating)}</span>
-                </div>
-                <div style={{ fontSize:11, color:"var(--muted)" }}>{f.rest}</div>
-                <div style={{ fontSize:12, color:"var(--text)", marginTop:4, lineHeight:1.5 }}>{f.text.slice(0,70)}…</div>
-              </div>
-            ))}
-          </div>
-        </div>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </>
   );
@@ -221,9 +237,6 @@ export default function SuperAdminDashboard() {
             <FeedbacksSection feedbacks={SEED_FB} />
           )}
 
-          {active === "sales" && (
-            <SalesReport />
-          )}
 
           {active === "discarded" && (
             <DiscardedRestaurants
