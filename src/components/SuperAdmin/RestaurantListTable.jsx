@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ac } from "./superadminData";
 import RestaurantOnboardingForm from "./RestaurantOnboardingForm";
 
 const styles = `
@@ -7,7 +6,6 @@ const styles = `
 
   .rlt-wrap * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-  /* ── Card ── */
   .rlt-card {
     background: #ffffff;
     border-radius: 16px;
@@ -16,7 +14,6 @@ const styles = `
     overflow: hidden;
   }
 
-  /* ── Header ── */
   .rlt-header {
     display: flex;
     align-items: center;
@@ -41,10 +38,10 @@ const styles = `
     gap: 6px;
   }
   .rlt-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-  .rlt-dot-green { background: #22c55e; }
-  .rlt-dot-grey  { background: #d1d5db; }
+  .rlt-dot-green  { background: #22c55e; }
+  .rlt-dot-grey   { background: #d1d5db; }
+  .rlt-dot-orange { background: #f97316; }
 
-  /* ── Controls ── */
   .rlt-controls {
     display: flex;
     align-items: center;
@@ -52,7 +49,6 @@ const styles = `
     flex-wrap: wrap;
   }
 
-  /* Filter Pills */
   .rlt-tabs {
     display: flex;
     gap: 4px;
@@ -79,7 +75,6 @@ const styles = `
     font-weight: 600;
   }
 
-  /* Search */
   .rlt-search {
     display: flex;
     align-items: center;
@@ -104,7 +99,6 @@ const styles = `
   }
   .rlt-search input::placeholder { color: #bbb; }
 
-  /* Add Button */
   .rlt-add-btn {
     display: flex;
     align-items: center;
@@ -126,7 +120,6 @@ const styles = `
     box-shadow: 0 4px 14px rgba(212,168,67,0.45);
   }
 
-  /* ── Table ── */
   .rlt-table-wrap { overflow-x: auto; }
   .rlt-table {
     width: 100%;
@@ -153,61 +146,42 @@ const styles = `
   }
   .rlt-table tbody tr:last-child { border-bottom: none; }
   .rlt-table tbody tr:hover { background: #fdfaf3; }
+  .rlt-table tbody tr.rlt-discarded-row { background: #fafafa; opacity: 0.7; }
+  .rlt-table tbody tr.rlt-discarded-row:hover { background: #f5f5f5; }
   .rlt-table td {
     padding: 13px 16px;
     color: #333;
     vertical-align: middle;
   }
 
-  /* Restaurant cell */
   .rlt-rest-cell { display: flex; align-items: center; gap: 12px; }
   .rlt-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-    flex-shrink: 0;
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
   }
+  .rlt-avatar.discarded { filter: grayscale(1); opacity: 0.6; }
   .rlt-rest-name { font-weight: 600; color: #111; font-size: 14px; }
   .rlt-rest-sub  { font-size: 12px; color: #bbb; margin-top: 2px; }
 
-  /* Owner cell */
-  .rlt-owner-cell { display: flex; align-items: center; gap: 8px; }
-  .rlt-owner-icon {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: #f3f4f6;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; color: #888; flex-shrink: 0;
-  }
-  .rlt-owner-name { font-weight: 500; color: #333; }
+  .rlt-email-cell { color: #666; font-size: 13px; }
 
-  /* Email cell */
-  .rlt-email-cell { display: flex; align-items: center; gap: 7px; color: #666; font-size: 13px; }
-  .rlt-email-icon { color: #bbb; font-size: 12px; }
-
-  /* City pill */
   .rlt-city {
     display: inline-flex; align-items: center; gap: 5px;
     background: #f5f5f7; border-radius: 20px;
     padding: 4px 10px; font-size: 12.5px; color: #555; font-weight: 500;
   }
 
-  /* Status Badge */
   .rlt-badge {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 10px; border-radius: 20px;
     font-size: 12px; font-weight: 600;
   }
-  .rlt-badge-active  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-  .rlt-badge-inactive{ background: #fafafa; color: #999;    border: 1px solid #e5e7eb; }
+  .rlt-badge-active    { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .rlt-badge-inactive  { background: #fafafa; color: #999;    border: 1px solid #e5e7eb; }
+  .rlt-badge-discarded { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
   .rlt-badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-  /* Action Buttons */
   .rlt-actions { display: flex; align-items: center; gap: 6px; justify-content: center; }
   .rlt-btn {
     width: 32px; height: 32px; border-radius: 8px;
@@ -217,32 +191,33 @@ const styles = `
     transition: all 0.15s ease;
   }
   .rlt-btn:hover { transform: scale(1.1); }
-  .rlt-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-  .rlt-btn-edit    { background: #eff6ff; color: #3b82f6; border-color: #dbeafe; }
+  .rlt-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+  .rlt-btn-edit     { background: #eff6ff; color: #3b82f6; border-color: #dbeafe; }
   .rlt-btn-edit:hover { background: #dbeafe; color: #2563eb; }
-  .rlt-btn-suspend { background: #fffbeb; color: #f59e0b; border-color: #fde68a; }
+  .rlt-btn-suspend  { background: #fffbeb; color: #f59e0b; border-color: #fde68a; }
   .rlt-btn-suspend:hover { background: #fef3c7; color: #d97706; }
-  .rlt-btn-activate{ background: #f0fdf4; color: #22c55e; border-color: #bbf7d0; }
+  .rlt-btn-activate { background: #f0fdf4; color: #22c55e; border-color: #bbf7d0; }
   .rlt-btn-activate:hover { background: #dcfce7; color: #16a34a; }
-  .rlt-btn-delete  { background: #fff5f5; color: #ef4444; border-color: #fecaca; }
+  .rlt-btn-discard  { background: #fff7ed; color: #f97316; border-color: #fed7aa; }
+  .rlt-btn-discard:hover { background: #ffedd5; color: #ea580c; }
+  .rlt-btn-restore  { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+  .rlt-btn-restore:hover { background: #dcfce7; color: #15803d; }
+  .rlt-btn-delete   { background: #fff5f5; color: #ef4444; border-color: #fecaca; }
   .rlt-btn-delete:hover { background: #fee2e2; color: #dc2626; }
 
-  /* Tooltip */
   .rlt-tip { position: relative; }
   .rlt-tip-label {
     position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
     background: #1f2937; color: #fff; font-size: 11px; font-weight: 500;
     padding: 4px 8px; border-radius: 6px; white-space: nowrap;
-    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10;
   }
   .rlt-tip:hover .rlt-tip-label { opacity: 1; }
 
-  /* Empty state */
   .rlt-empty { text-align: center; padding: 48px 20px; }
   .rlt-empty-icon { font-size: 36px; margin-bottom: 12px; }
   .rlt-empty-text { font-size: 14px; color: #ccc; }
 
-  /* ── Modal ── */
   .rlt-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.4);
@@ -303,30 +278,62 @@ const styles = `
     cursor: pointer; box-shadow: 0 2px 8px rgba(212,168,67,0.3); transition: all 0.15s;
   }
   .rlt-save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(212,168,67,0.4); }
+
+  /* Discard confirm modal */
+  .rlt-confirm-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin: 0 auto 14px;
+  }
+  .rlt-confirm-icon.warn { background: #fff7ed; color: #f97316; }
+  .rlt-confirm-title { text-align: center; font-size: 16px; font-weight: 700; color: #111; margin-bottom: 8px; }
+  .rlt-confirm-msg   { text-align: center; font-size: 13.5px; color: #666; line-height: 1.6; }
+  .rlt-confirm-body  { padding: 28px 24px 8px; }
+  .rlt-confirm-foot  {
+    display: flex; gap: 10px; justify-content: center;
+    padding: 20px 24px 24px;
+  }
+  .rlt-btn-outline-grey {
+    background: #fff; border: 1.5px solid #e5e7eb; color: #555;
+    border-radius: 10px; padding: 9px 20px; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .rlt-btn-outline-grey:hover { background: #f5f5f7; }
+  .rlt-btn-orange {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none; border-radius: 10px;
+    padding: 9px 20px; font-size: 13.5px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(249,115,22,0.3); transition: all 0.15s;
+  }
+  .rlt-btn-orange:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(249,115,22,0.4); }
 `;
 
 const AVATAR_COLORS = ["#f97316","#8b5cf6","#3b82f6","#10b981","#ec4899","#14b8a6","#f43f5e","#6366f1"];
+const BASE_URL = "http://127.0.0.1:8000";
 
-export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showToast }) {
-  const [restaurants, setRestaurants] = useState([]);
-  const [search, setSearch]           = useState("");
-  const [filterTab, setFilterTab]     = useState("all");
-  const [showAdd, setShowAdd]         = useState(false);
-  const [editData, setEditData]       = useState(null);
-  const [togglingId, setTogglingId]   = useState(null);
+export default function RestaurantListTable({ showToast }) {
+  const [restaurants, setRestaurants]   = useState([]);
+  const [search, setSearch]             = useState("");
+  const [filterTab, setFilterTab]       = useState("all");
+  const [showAdd, setShowAdd]           = useState(false);
+  const [editData, setEditData]         = useState(null);
+  const [togglingId, setTogglingId]     = useState(null);
+  const [discardTarget, setDiscardTarget] = useState(null); // restaurant to discard
 
+  // ── Fetch ──
   const fetchRestaurants = async () => {
     try {
-      const res  = await fetch("http://127.0.0.1:8000/api/restaurants/");
+      const res  = await fetch(`${BASE_URL}/api/restaurants/`);
       const data = await res.json();
       setRestaurants(
         data.map((r) => ({
-          id:     r.id,
-          name:   r.name || "N/A",
-          owner:  r.owner_email?.split("@")[0] || "Owner",
-          city:   r.location || "India",
-          status: r.status === "suspended" ? "inactive" : "active",
-          email:  r.owner_email,
+          id:           r.id,
+          name:         r.name || "N/A",
+          owner:        r.owner_email?.split("@")[0] || "Owner",
+          city:         r.location || "India",
+          status:       r.status === "suspended" ? "inactive" : "active",
+          email:        r.owner_email,
+          is_discarded: r.is_discarded ?? false,
         }))
       );
     } catch (err) {
@@ -337,52 +344,98 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
 
   useEffect(() => { fetchRestaurants(); }, []);
 
+  // ── Delete ──
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this restaurant?")) return;
+    if (!window.confirm("Delete this restaurant permanently?")) return;
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/restaurants/${id}/`, { method: "DELETE" });
-      res.ok ? (showToast?.("Deleted ✅", "success"), fetchRestaurants()) : showToast?.("Delete failed ❌", "error");
+      const res = await fetch(`${BASE_URL}/api/restaurants/${id}/`, { method: "DELETE" });
+      res.ok
+        ? (showToast?.("Deleted ✅", "success"), fetchRestaurants())
+        : showToast?.("Delete failed ❌", "error");
     } catch (err) { console.error(err); }
   };
 
+  // ── Suspend / Activate ──
   const handleToggleStatus = async (r) => {
     const newStatus = r.status === "active" ? "suspended" : "active";
     setTogglingId(r.id);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/restaurants/${r.id}/`, {
-        method: "PATCH",
+      const res = await fetch(`${BASE_URL}/api/restaurants/${r.id}/`, {
+        method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body:    JSON.stringify({ status: newStatus }),
       });
       if (res.ok) {
-        showToast?.(newStatus === "suspended" ? "Suspended 🔴" : "Activated 🟢", newStatus === "suspended" ? "error" : "success");
+        showToast?.(
+          newStatus === "suspended" ? "Suspended 🔴" : "Activated 🟢",
+          newStatus === "suspended" ? "error" : "success"
+        );
         fetchRestaurants();
       } else showToast?.("Status update failed ❌", "error");
     } catch (err) { console.error(err); }
     finally { setTogglingId(null); }
   };
 
+  // ── Discard / Restore ──
+  const handleDiscard = async (r) => {
+    // If already discarded → restore directly (no confirmation needed)
+    if (r.is_discarded) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/restaurants/${r.id}/discard/`, { method: "PUT" });
+        if (res.ok) {
+          showToast?.("Restaurant restored ✅ — now visible on user UI", "success");
+          fetchRestaurants();
+        } else showToast?.("Restore failed ❌", "error");
+      } catch (err) { console.error(err); }
+      return;
+    }
+    // If active → show confirmation modal first
+    setDiscardTarget(r);
+  };
+
+  const confirmDiscard = async () => {
+    if (!discardTarget) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/restaurants/${discardTarget.id}/discard/`, { method: "PUT" });
+      if (res.ok) {
+        showToast?.(`"${discardTarget.name}" discarded 🗃️ — hidden from user UI`, "error");
+        fetchRestaurants();
+      } else showToast?.("Discard failed ❌", "error");
+    } catch (err) { console.error(err); }
+    setDiscardTarget(null);
+  };
+
+  // ── Edit / Update ──
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/restaurants/${editData.id}/`, {
-        method: "PUT",
+      const res = await fetch(`${BASE_URL}/api/restaurants/${editData.id}/`, {
+        method:  "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: editData.name, owner_email: editData.email, location: editData.city }),
+        body:    JSON.stringify({ name: editData.name, owner_email: editData.email, location: editData.city }),
       });
-      if (res.ok) { showToast?.("Updated ✅", "success"); setEditData(null); fetchRestaurants(); }
-      else showToast?.("Update failed ❌", "error");
+      if (res.ok) {
+        showToast?.("Updated ✅", "success");
+        setEditData(null);
+        fetchRestaurants();
+      } else showToast?.("Update failed ❌", "error");
     } catch (err) { console.error(err); }
   };
 
+  // ── Filter ──
   const filtered = restaurants.filter((r) => {
-    const matchTab    = filterTab === "all" || r.status === filterTab;
-    const q           = search.toLowerCase();
+    const q = search.toLowerCase();
     const matchSearch = !q || [r.name, r.owner, r.city, r.email].some((v) => v?.toLowerCase().includes(q));
-    return matchTab && matchSearch;
+
+    if (filterTab === "all")       return matchSearch;
+    if (filterTab === "active")    return matchSearch && r.status === "active"   && !r.is_discarded;
+    if (filterTab === "inactive")  return matchSearch && r.status === "inactive" && !r.is_discarded;
+    if (filterTab === "discarded") return matchSearch && r.is_discarded;
+    return matchSearch;
   });
 
-  const activeCount   = restaurants.filter((r) => r.status === "active").length;
-  const inactiveCount = restaurants.filter((r) => r.status === "inactive").length;
+  const activeCount    = restaurants.filter((r) => r.status === "active"   && !r.is_discarded).length;
+  const inactiveCount  = restaurants.filter((r) => r.status === "inactive" && !r.is_discarded).length;
+  const discardedCount = restaurants.filter((r) => r.is_discarded).length;
 
   return (
     <>
@@ -391,7 +444,7 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
       <div className="rlt-wrap">
         <div className="rlt-card">
 
-          {/* Header */}
+          {/* ── Header ── */}
           <div className="rlt-header">
             <div>
               <div className="rlt-title">All Restaurants</div>
@@ -402,23 +455,37 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
                 <span className="rlt-dot rlt-dot-grey" />
                 <span style={{ color: "#aaa" }}>{inactiveCount} inactive</span>
                 <span style={{ color: "#e5e7eb" }}>·</span>
+                <span className="rlt-dot rlt-dot-orange" />
+                <span style={{ color: "#f97316" }}>{discardedCount} discarded</span>
+                <span style={{ color: "#e5e7eb" }}>·</span>
                 <span style={{ color: "#bbb" }}>{restaurants.length} total</span>
               </div>
             </div>
 
             <div className="rlt-controls">
+              {/* Filter tabs */}
               <div className="rlt-tabs">
-                {["all", "active", "inactive"].map((tab) => (
-                  <button key={tab} className={`rlt-tab ${filterTab === tab ? "active" : ""}`} onClick={() => setFilterTab(tab)}>
+                {["all", "active", "inactive", "discarded"].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`rlt-tab ${filterTab === tab ? "active" : ""}`}
+                    onClick={() => setFilterTab(tab)}
+                  >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
                 ))}
               </div>
 
+              {/* Search */}
               <div className="rlt-search">
-                <input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <input
+                  placeholder="Search…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
               </div>
 
+              {/* Add */}
               <button className="rlt-add-btn" onClick={() => setShowAdd(true)}>
                 <i className="fas fa-plus" style={{ fontSize: 11 }} />
                 Add Restaurant
@@ -426,7 +493,7 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
             </div>
           </div>
 
-          {/* Table */}
+          {/* ── Table ── */}
           <div className="rlt-table-wrap">
             <table className="rlt-table">
               <thead>
@@ -450,45 +517,46 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
                     </td>
                   </tr>
                 ) : filtered.map((r, i) => (
-                  <tr key={r.id}>
+                  <tr key={r.id} className={r.is_discarded ? "rlt-discarded-row" : ""}>
 
                     {/* Restaurant */}
                     <td>
                       <div className="rlt-rest-cell">
-                        <div className="rlt-avatar" style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}>
+                        <div
+                          className={`rlt-avatar ${r.is_discarded ? "discarded" : ""}`}
+                          style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
+                        >
                           {r.name[0]?.toUpperCase()}
                         </div>
                         <div>
-                          <div className="rlt-rest-name">{r.name}</div>
+                          <div className="rlt-rest-name" style={r.is_discarded ? { color: "#aaa", textDecoration: "line-through" } : {}}>
+                            {r.name}
+                          </div>
                           <div className="rlt-rest-sub">ID #{r.id}</div>
                         </div>
                       </div>
                     </td>
 
                     {/* Owner */}
-                    <td>
-                      <div className="rlt-owner-cell">
-                        <span className="rlt-owner-name">{r.owner}</span>
-                      </div>
-                    </td>
+                    <td>{r.owner}</td>
 
                     {/* Email */}
                     <td>
-                      <div className="rlt-email-cell">
-                        {r.email || "—"}
-                      </div>
+                      <div className="rlt-email-cell">{r.email || "—"}</div>
                     </td>
 
                     {/* City */}
                     <td>
-                      <span className="rlt-city">
-                        {r.city}
-                      </span>
+                      <span className="rlt-city">{r.city}</span>
                     </td>
 
                     {/* Status */}
                     <td>
-                      {r.status === "active" ? (
+                      {r.is_discarded ? (
+                        <span className="rlt-badge rlt-badge-discarded">
+                          <span className="rlt-badge-dot" style={{ background: "#f97316" }} /> Discarded
+                        </span>
+                      ) : r.status === "active" ? (
                         <span className="rlt-badge rlt-badge-active">
                           <span className="rlt-badge-dot" style={{ background: "#22c55e" }} /> Active
                         </span>
@@ -503,28 +571,42 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
                     <td>
                       <div className="rlt-actions">
 
+                        {/* Edit — disabled when discarded */}
                         <div className="rlt-tip">
-                          <button className="rlt-btn rlt-btn-edit" onClick={() => setEditData(r)}>
-                            ✏️
-                          </button>
+                          <button
+                            className="rlt-btn rlt-btn-edit"
+                            onClick={() => setEditData(r)}
+                            disabled={r.is_discarded}
+                          >✏️</button>
                           <span className="rlt-tip-label">Edit</span>
                         </div>
 
+                        {/* Suspend / Activate — disabled when discarded */}
                         <div className="rlt-tip">
                           <button
                             className={`rlt-btn ${r.status === "active" ? "rlt-btn-suspend" : "rlt-btn-activate"}`}
                             onClick={() => handleToggleStatus(r)}
-                            disabled={togglingId === r.id}
+                            disabled={togglingId === r.id || r.is_discarded}
                           >
                             {togglingId === r.id
                               ? <i className="fa-solid fa-spinner fa-spin" />
-                              : r.status === "active"
-                                ? "🛑" 
-                                :  "✅"}
+                              : r.status === "active" ? "🛑" : "✅"}
                           </button>
                           <span className="rlt-tip-label">{r.status === "active" ? "Suspend" : "Activate"}</span>
                         </div>
 
+                        {/* Discard / Restore */}
+                        <div className="rlt-tip">
+                          <button
+                            className={`rlt-btn ${r.is_discarded ? "rlt-btn-restore" : "rlt-btn-discard"}`}
+                            onClick={() => handleDiscard(r)}
+                          >
+                            {r.is_discarded ? "♻️" : "🗃️"}
+                          </button>
+                          <span className="rlt-tip-label">{r.is_discarded ? "Restore" : "Discard"}</span>
+                        </div>
+
+                        {/* Delete */}
                         <div className="rlt-tip">
                           <button className="rlt-btn rlt-btn-delete" onClick={() => handleDelete(r.id)}>
                             🗑️
@@ -534,7 +616,6 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
 
                       </div>
                     </td>
-
                   </tr>
                 ))}
               </tbody>
@@ -543,7 +624,7 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
         </div>
       </div>
 
-      {/* Add Form */}
+      {/* ── Add Form ── */}
       {showAdd && (
         <RestaurantOnboardingForm
           onClose={() => { setShowAdd(false); fetchRestaurants(); }}
@@ -551,7 +632,7 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
         />
       )}
 
-      {/* Edit Modal */}
+      {/* ── Edit Modal ── */}
       {editData && (
         <div className="rlt-overlay">
           <div className="rlt-modal">
@@ -561,28 +642,61 @@ export default function RestaurantListTable({ onDiscard, onDelete, onAdd, showTo
                 <i className="fa-solid fa-xmark" />
               </button>
             </div>
-
             <div className="rlt-modal-body">
               <div className="rlt-field">
                 <label className="rlt-field-label">Restaurant Name</label>
-                <input className="rlt-field-input" placeholder="e.g. Pizza Palace"
-                  value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
+                <input
+                  className="rlt-field-input"
+                  placeholder="e.g. Pizza Palace"
+                  value={editData.name}
+                  onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                />
               </div>
               <div className="rlt-field">
                 <label className="rlt-field-label">Owner Email</label>
-                <input className="rlt-field-input" placeholder="owner@email.com"
-                  value={editData.email} onChange={(e) => setEditData({ ...editData, email: e.target.value })} />
+                <input
+                  className="rlt-field-input"
+                  placeholder="owner@email.com"
+                  value={editData.email}
+                  onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                />
               </div>
               <div className="rlt-field">
                 <label className="rlt-field-label">City / Location</label>
-                <input className="rlt-field-input" placeholder="e.g. Mumbai"
-                  value={editData.city} onChange={(e) => setEditData({ ...editData, city: e.target.value })} />
+                <input
+                  className="rlt-field-input"
+                  placeholder="e.g. Mumbai"
+                  value={editData.city}
+                  onChange={(e) => setEditData({ ...editData, city: e.target.value })}
+                />
               </div>
             </div>
-
             <div className="rlt-modal-foot">
               <button className="rlt-cancel-btn" onClick={() => setEditData(null)}>Cancel</button>
               <button className="rlt-save-btn" onClick={handleUpdate}>Save Changes</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Discard Confirmation Modal ── */}
+      {discardTarget && (
+        <div className="rlt-overlay" onClick={(e) => e.target === e.currentTarget && setDiscardTarget(null)}>
+          <div className="rlt-modal">
+            <div className="rlt-confirm-body">
+              <div className="rlt-confirm-icon warn">🗃️</div>
+              <div className="rlt-confirm-title">Discard Restaurant?</div>
+              <div className="rlt-confirm-msg">
+                <strong>"{discardTarget.name}"</strong> user UI se hide ho jayega.<br />
+                Iske saare products / menu items users ko nahi dikhenge.<br /><br />
+                Aap baad mein ise restore kar sakte hain.
+              </div>
+            </div>
+            <div className="rlt-confirm-foot">
+              <button className="rlt-btn-outline-grey" onClick={() => setDiscardTarget(null)}>Cancel</button>
+              <button className="rlt-btn-orange" onClick={confirmDiscard}>
+                🗃️ Yes, Discard
+              </button>
             </div>
           </div>
         </div>
