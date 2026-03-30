@@ -28,13 +28,13 @@ const EditFood = () => {
   useEffect(() => {
 
     // categories load
-    fetch("http://127.0.0.1:8000/api/categories/")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/categories/`)
       .then(res => res.json())
       .then(data => setCategories(data));
 
 
     // food detail load
-    fetch(`http://127.0.0.1:8000/api/edit-food/${id}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/edit-food/${id}/`)
       .then(res => res.json())
       .then(data => {
 
@@ -49,7 +49,7 @@ const EditFood = () => {
         });
 
         if (data.image) {
-          setPreview(`http://127.0.0.1:8000${data.image}`);
+          setPreview(`${import.meta.env.VITE_BACKEND_URL}${data.image}`);
         }
 
       });
@@ -107,7 +107,7 @@ const EditFood = () => {
 
     try {
 
-      const response = await fetch(`http://127.0.0.1:8000/api/edit-food/${id}/`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/edit-food/${id}/`, {
         method: "PUT",
         body: data,
       });

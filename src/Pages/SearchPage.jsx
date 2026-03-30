@@ -12,7 +12,7 @@ const SearchPage = () => {
 
    useEffect(()=>{
               if(query){
-                fetch(`http://127.0.0.1:8000/api/food_search/?q=${query}`)
+                fetch(`${import.meta.env.VITE_BACKEND_URL}/api/food_search/?q=${query}`)
               .then(res => res.json())
               .then(data => {
                 console.log("API DATA:", data)
@@ -31,7 +31,7 @@ const SearchPage = () => {
             foods.map((item)=>(
               <div className='col-md-4 mb-4'>
                   <div className='card hovereffect'>
-                    <img src={`http://127.0.0.1:8000/${item.image}`} className='card-img-top object-fit-fill' alt="" style={{height:"210px"}} />
+                    <img src={`${import.meta.env.VITE_BACKEND_URL}/${item.image}`} className='card-img-top object-fit-fill' alt="" style={{height:"210px"}} />
                     <div className='card-body'>
                       <h5 className='card-title'>
                         <Link to="#">{item.item_name}</Link>

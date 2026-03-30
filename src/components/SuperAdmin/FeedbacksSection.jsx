@@ -21,7 +21,7 @@ export default function FeedbacksSection({ showToast }) {
   // ✅ FETCH API
   const fetchFeedbacks = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/all-reviews/");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/all-reviews/`);
       const data = await res.json();
 
       // 🔥 mapping (backend → UI)

@@ -12,7 +12,7 @@ const ManageFood = () => {
 
   useEffect(() => {
     // Sirf is restaurant ke foods fetch karo
-    fetch(`http://127.0.0.1:8000/api/foods/?restaurant_id=${restaurantId}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/food/?restaurant_id=${restaurantId}`)
       .then(res => res.json())
       .then(data => {
         setFoods(data);
@@ -33,7 +33,7 @@ const ManageFood = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this food item?")) {
-      fetch(`http://127.0.0.1:8000/api/delete-food/${id}/`, { method: 'DELETE' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/delete-food/${id}/`, { method: 'DELETE' })
         .then(res => res.json())
         .then(data => {
           toast.success(data.message);

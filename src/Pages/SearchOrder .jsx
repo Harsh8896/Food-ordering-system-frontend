@@ -22,7 +22,7 @@ const SearchOrder = () => {
 
         try {
             const restaurantId = localStorage.getItem('restaurantId');
-            const response = await fetch(`http://127.0.0.1:8000/api/search-orders/?q=${searchTerm}&restaurant_id=${restaurantId}`);
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/search-orders/?q=${searchTerm}&restaurant_id=${restaurantId}`);
             const data = await response.json();
             setOrders(data);
             setSubmitted(true);

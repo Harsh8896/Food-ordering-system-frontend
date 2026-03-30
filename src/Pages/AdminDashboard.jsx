@@ -12,8 +12,6 @@ import {
     FaList, FaHeart, FaStar, FaBell 
 } from 'react-icons/fa';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
-
 const AdminDashboard = () => {
     const adminUser = localStorage.getItem('adminUser');
     const navigate = useNavigate();
@@ -29,8 +27,8 @@ const AdminDashboard = () => {
         const rid = localStorage.getItem('restaurantId');
         const validRid = rid && rid !== 'null' ? rid : null;
         const url = validRid
-            ? `${BASE_URL}/dashboard_metrics/?restaurant_id=${validRid}`
-            : `${BASE_URL}/dashboard_metrics/`;
+            ? `${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/?restaurant_id=${validRid}`
+            : `${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/`;
 
         fetch(url)
             .then(res => res.json())

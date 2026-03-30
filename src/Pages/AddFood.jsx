@@ -29,7 +29,7 @@ const AddFood = () => {
     data.append("image", formData.image);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/add-food-item/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/add-food-item/`, {
         method: "POST",
         body: data,
       });
@@ -54,7 +54,7 @@ const AddFood = () => {
 
   useEffect(() => {
     // Sirf is restaurant ki categories fetch karo
-    fetch(`http://127.0.0.1:8000/api/categories/?restaurant_id=${restaurantId}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/categories/?restaurant_id=${restaurantId}`)
       .then(res => res.json())
       .then(data => {
         setCategories(data);

@@ -11,8 +11,8 @@ const OrderDelivered = () => {
             const rid = localStorage.getItem('restaurantId');
             const restaurantId = rid && rid !== 'null' ? rid : null;
             const url = restaurantId
-                ? `http://127.0.0.1:8000/api/orders-delivered/?restaurant_id=${restaurantId}`
-                : `http://127.0.0.1:8000/api/orders-delivered/`;
+                ? `${import.meta.env.VITE_BACKEND_URL}/api/orders-delivered/?restaurant_id=${restaurantId}`
+                : `${import.meta.env.VITE_BACKEND_URL}/api/orders-delivered/`;
 
             const response = await fetch(url);
             const data = await response.json();

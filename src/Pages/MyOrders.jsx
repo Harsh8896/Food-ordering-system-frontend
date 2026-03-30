@@ -8,8 +8,6 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://127.0.0.1:8000/api";
-
 const MyOrders = () => {
   const userId = localStorage.getItem("userId");
   const [orders, setOrders] = useState([]);
@@ -42,13 +40,13 @@ const MyOrders = () => {
   }, [userId, navigate]);
 
   const fetchOrders = () => {
-    fetch(`${BASE_URL}/orders/${userId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/orders/${userId}/`)
       .then(res => res.json())
       .then(data => setOrders(data));
   };
 
   const fetchDeliveredFoods = () => {
-    fetch(`${BASE_URL}/delivered-orders/${userId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/delivered-orders/${userId}/`)
       .then(res => res.json())
       .then(data => setDeliveredFoods(data));
   };
@@ -82,14 +80,14 @@ const MyOrders = () => {
       let res;
       if (isEditing && activeReview.my_review_id) {
         // Edit existing review
-        res = await fetch(`${BASE_URL}/review_edit/${activeReview.my_review_id}/`, {
+        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/review_edit/${activeReview.my_review_id}/`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ rating, comment }),
         });
       } else {
         // New review
-        res = await fetch(`${BASE_URL}/reviews/add/${activeReview.food_id}/`, {
+        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reviews/add/${activeReview.food_id}/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: userId, rating, comment }),
@@ -112,7 +110,7 @@ const MyOrders = () => {
   const handleDeleteReview = async (food) => {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
     try {
-      const res = await fetch(`${BASE_URL}/review_edit/${food.my_review_id}/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/review_edit/${food.my_review_id}/`, {
         method: "DELETE",
       });
       if (res.ok) {

@@ -8,7 +8,7 @@ const ManageUser = () => {
     const [allUsers, setAllUsers] = useState([]); // Backup for searching
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/users/')
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/`)
             .then(res => res.json())
             .then(data => {
                 setUsers(data);
@@ -34,7 +34,7 @@ const ManageUser = () => {
     // Delete logic
     const handleDelete = (id) => {
         if (window.confirm("Are you sure you want to delete this user?")) {
-            fetch(`http://127.0.0.1:8000/api/delete_user/${id}/`, {
+            fetch(`${import.meta.env.VITE_BACKEND_URL}/api/delete_user/${id}/`, {
                 method: 'DELETE'
             })
             .then(res => res.json())

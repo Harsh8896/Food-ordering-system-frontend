@@ -22,7 +22,7 @@ const ProfilePage = () => {
             return;
         }
         // User data fetch karna
-        fetch(`http://127.0.0.1:8000/api/user/${userId}/`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/${userId}/`)
             .then(res => res.json())
             .then(data => {
                 setFormData(data);
@@ -37,7 +37,7 @@ const ProfilePage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/user_update/${userId}/`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user_update/${userId}/`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -5,7 +5,6 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { FaSearch, FaFilter, FaSortAmountDown, FaStar, FaStarHalfAlt, FaRegStar, FaUndoAlt, FaChevronRight, FaStore, FaCrown } from "react-icons/fa";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 // ── Star renderer ──
 const renderStars = (avg, size = 14) => {
@@ -99,8 +98,8 @@ const FoodList = () => {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${BASE_URL}/api/master-foods/`).then(r => r.json()),
-      fetch(`${BASE_URL}/api/foods/`).then(r => r.json()),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/master-foods/`).then(r => r.json()),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/foods/`).then(r => r.json()),
     ]).then(([masterFoods, restaurantFoods]) => {
 
       const masterFormatted = masterFoods.map(f => ({
@@ -124,7 +123,7 @@ const FoodList = () => {
         type: 'restaurant',
         name: f.item_name,
         description: f.item_description,
-        image: `${BASE_URL}${f.image}`,
+        image: `${import.meta.env.VITE_BACKEND_URL}${f.image}`,
         price: parseFloat(f.item_price) || 0,
         category: f.category_name || 'Other',
         restaurant_name: f.restaurant_name,

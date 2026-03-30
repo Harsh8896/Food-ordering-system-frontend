@@ -11,7 +11,7 @@ const EditCategory = () => {
 
     // Page load hone par existing category data fetch karna
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/category/${id}/`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/${id}/`)
             .then(res => res.json())
             .then(data => {
                 setCategoryName(data.category_name);
@@ -22,7 +22,7 @@ const EditCategory = () => {
     // Update process handle karne ke liye function
     const handleUpdate = (e) => {
         e.preventDefault();
-        fetch(`http://127.0.0.1:8000/api/category/${id}/`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/${id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

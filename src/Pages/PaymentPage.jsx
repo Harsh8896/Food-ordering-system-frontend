@@ -18,7 +18,7 @@ const PaymentPage = () => {
 
   const fetchCartDetails = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/cart/${userId}/`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/${userId}/`);
       const data = await res.json();
       setCartItems(data);
       const total = data.reduce((sum, item) => sum + item.food.item_price * item.quantity, 0);
@@ -98,7 +98,7 @@ const PaymentPage = () => {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/place_order/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/place_order/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

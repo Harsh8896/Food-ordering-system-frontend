@@ -309,7 +309,6 @@ const styles = `
 `;
 
 const AVATAR_COLORS = ["#f97316","#8b5cf6","#3b82f6","#10b981","#ec4899","#14b8a6","#f43f5e","#6366f1"];
-const BASE_URL = "http://127.0.0.1:8000";
 
 export default function RestaurantListTable({ showToast }) {
   const [restaurants, setRestaurants]   = useState([]);
@@ -323,7 +322,7 @@ export default function RestaurantListTable({ showToast }) {
   // ── Fetch ──
   const fetchRestaurants = async () => {
     try {
-      const res  = await fetch(`${BASE_URL}/api/restaurants/`);
+      const res  = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/`);
       const data = await res.json();
       setRestaurants(
         data.map((r) => ({
@@ -348,7 +347,7 @@ export default function RestaurantListTable({ showToast }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this restaurant permanently?")) return;
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${id}/`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${id}/`, { method: "DELETE" });
       res.ok
         ? (showToast?.("Deleted ✅", "success"), fetchRestaurants())
         : showToast?.("Delete failed ❌", "error");
@@ -360,7 +359,7 @@ export default function RestaurantListTable({ showToast }) {
     const newStatus = r.status === "active" ? "suspended" : "active";
     setTogglingId(r.id);
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${r.id}/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${r.id}/`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ status: newStatus }),
@@ -381,7 +380,7 @@ export default function RestaurantListTable({ showToast }) {
     // If already discarded → restore directly (no confirmation needed)
     if (r.is_discarded) {
       try {
-        const res = await fetch(`${BASE_URL}/api/restaurants/${r.id}/discard/`, { method: "PUT" });
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${r.id}/discard/`, { method: "PUT" });
         if (res.ok) {
           showToast?.("Restaurant restored ✅ — now visible on user UI", "success");
           fetchRestaurants();
@@ -396,7 +395,7 @@ export default function RestaurantListTable({ showToast }) {
   const confirmDiscard = async () => {
     if (!discardTarget) return;
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${discardTarget.id}/discard/`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${discardTarget.id}/discard/`, { method: "PUT" });
       if (res.ok) {
         showToast?.(`"${discardTarget.name}" discarded 🗃️ — hidden from user UI`, "error");
         fetchRestaurants();
@@ -408,7 +407,7 @@ export default function RestaurantListTable({ showToast }) {
   // ── Edit / Update ──
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${editData.id}/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${editData.id}/`, {
         method:  "PUT",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ name: editData.name, owner_email: editData.email, location: editData.city }),

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import "react-toastify/dist/ReactToastify.css";
 import PublicLayout from '../components/PublicLayout';
 
+
 const AdminLogin = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -17,7 +18,7 @@ const AdminLogin = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/admin-login/", {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin-login/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),

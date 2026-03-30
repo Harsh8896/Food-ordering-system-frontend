@@ -5,8 +5,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaStar, FaCheckCircle, FaBoxOpen } from 'react-icons/fa';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
-
 const MyDeliveredOrders = () => {
   const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
@@ -30,7 +28,7 @@ const MyDeliveredOrders = () => {
   const fetchDeliveredOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/delivered-orders/${userId}/`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/delivered-orders/${userId}/`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -54,7 +52,7 @@ const MyDeliveredOrders = () => {
     }
     setSubmitting(true);
     try {
-      const res = await fetch(`${BASE_URL}/reviews/add/${activeReview.food_id}/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reviews/add/${activeReview.food_id}/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

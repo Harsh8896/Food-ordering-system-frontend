@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaMinus, FaPlus, FaShoppingCart, FaTrash, FaMapMarkerAlt, FaStore } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 
+
+
 function Cart() {
   const userId = localStorage.getItem("userId");
   const [cartItems, setCartItems] = useState([]);
@@ -14,7 +16,7 @@ function Cart() {
   const navigate = useNavigate();
 
   const fetchCart = async () => {
-    const res = await fetch(`http://127.0.0.1:8000/api/cart/${userId}/`);
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/${userId}/`);
     const data = await res.json();
     setCartItems(data);
     setCartCount(data.length);
@@ -36,7 +38,7 @@ function Cart() {
   const updateQuantity = async (orderId, newQty) => {
     if (newQty < 1) return;
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/cart/update_quantity/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/update_quantity/`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, quantity: newQty }),
@@ -55,7 +57,7 @@ function Cart() {
     const confirmDelete = window.confirm("Are you sure you want to delete this item?");
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/cart/delete/${orderId}/`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/delete/${orderId}/`, {
         method: "DELETE",
       });
       if (response.status === 200) {
@@ -319,7 +321,7 @@ function Cart() {
                   <div className="cart-card" key={item.id}>
                     <div className="d-flex">
                       <img
-                        src={`http://127.0.0.1:8000/${item.food.image}`}
+                        src={`${import.meta.env.VITE_BACKEND_URL}${item.food.image}`}
                         className="cart-img"
                         alt={item.food.item_name}
                       />

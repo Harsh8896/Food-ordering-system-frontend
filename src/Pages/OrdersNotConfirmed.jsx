@@ -16,8 +16,8 @@ const OrdersNotConfirmed = () => {
         const rid = localStorage.getItem('restaurantId');
         const restaurantId = rid && rid !== 'null' ? rid : null;
         const url = restaurantId
-            ? `http://127.0.0.1:8000/api/orders-not-confirmed/?restaurant_id=${restaurantId}`
-            : `http://127.0.0.1:8000/api/orders-not-confirmed/`;
+            ? `${import.meta.env.VITE_BACKEND_URL}/api/orders-not-confirmed/?restaurant_id=${restaurantId}`
+            : `${import.meta.env.VITE_BACKEND_URL}/api/orders-not-confirmed/`;
 
         fetch(url)
             .then(res => res.json())

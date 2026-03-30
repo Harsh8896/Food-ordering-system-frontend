@@ -39,7 +39,7 @@ export default function RestaurantOnboardingForm({ onClose, showToast }) {
     try {
       setLoading(true);
 
-      const response = await fetch("http://127.0.0.1:8000/api/restaurants/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
