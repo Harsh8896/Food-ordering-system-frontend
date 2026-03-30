@@ -4,7 +4,7 @@ const TopProducts = () => {
   const [topFoods, setTopFoods] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/top_selling_foods/")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/top_selling_foods/`)
       .then((res) => res.json())
       .then((data) => {
         setTopFoods(data);

@@ -10,8 +10,8 @@ const ConfirmOrder = () => {
             const rid = localStorage.getItem('restaurantId');
             const restaurantId = rid && rid !== 'null' ? rid : null;
             const url = restaurantId
-                ? `http://127.0.0.1:8000/api/orders-confirmed/?restaurant_id=${restaurantId}`
-                : `http://127.0.0.1:8000/api/orders-confirmed/`;
+                ? `${import.meta.env.VITE_BACKEND_URL}/api/orders-confirmed/?restaurant_id=${restaurantId}`
+                : `${import.meta.env.VITE_BACKEND_URL}/api/orders-confirmed/`;
 
             const response = await fetch(url);
             const data = await response.json();

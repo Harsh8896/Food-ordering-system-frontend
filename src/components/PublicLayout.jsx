@@ -18,7 +18,7 @@ const PublicLayout = ({ children }) => {
 
   const fetchCartCount = async () => {
     if (userId) {
-      const res = await fetch(`http://127.0.0.1:8000/api/cart/${userId}/`)
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/${userId}/`)
       const data = await res.json()
       setCartCount(data.length)
     }
@@ -27,7 +27,7 @@ const PublicLayout = ({ children }) => {
   const checkActiveOrders = async () => {
     if (userId) {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/orders/${userId}/`)
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${userId}/`)
         const data = await res.json()
         setHasActiveOrders(data.length > 0)
       } catch (err) {

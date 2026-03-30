@@ -24,8 +24,8 @@ const AdminLayout = ({children}) => {
     const rid = localStorage.getItem('restaurantId');
     const restaurantId = rid && rid !== 'null' ? rid : null;
     const url = restaurantId
-      ? `http://127.0.0.1:8000/api/dashboard_metrics/?restaurant_id=${restaurantId}`
-      : `http://127.0.0.1:8000/api/dashboard_metrics/`;
+      ? `${import.meta.env.VITE_BACKEND_URL}/api/dashboard_metrics/?restaurant_id=${restaurantId}`
+      : `${import.meta.env.VITE_BACKEND_URL}/api/dashboard_metrics/`;
 
     fetch(url)
       .then(res => res.json())

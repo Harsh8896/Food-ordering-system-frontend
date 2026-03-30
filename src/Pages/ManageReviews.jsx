@@ -10,14 +10,14 @@ const ManageReviews = () => {
 
   useEffect(() => {
     if (!adminUser) { navigate('/admin-login'); return; }
-    fetch('http://127.0.0.1:8000/api/all-reviews/')
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/`)
       .then(res => res.json())
       .then(data => setReviews(data));
   }, []);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
-      fetch(`http://127.0.0.1:8000/api/delete_review/${id}/`, { method: 'DELETE' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/delete_review/${id}/`, { method: 'DELETE' })
         .then(res => res.json())
         .then(data => {
           toast.success(data.message || "Review deleted successfully");

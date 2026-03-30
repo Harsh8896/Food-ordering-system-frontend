@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaMobileAlt, FaLock, FaEye, FaEyeSlash, FaUtensils } from "react-icons/fa";
 
+
 const inputStyle = {
   width: '100%',
   padding: '12px 12px 12px 44px',
@@ -74,7 +75,7 @@ const Register = () => {
     if (password !== repeatPassword) { toast.error("Passwords do not match"); return; }
     setLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register/", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstname, lastname, email, mobile, password }),

@@ -7,7 +7,6 @@ import "react-medium-image-zoom/dist/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import PublicLayout from "../components/PublicLayout";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 // ── Star renderer ──
 const Stars = ({ rating, size = 14 }) => (
@@ -87,10 +86,10 @@ const ReviewSection = ({ foodId }) => {
 
   useEffect(() => {
     if (!foodId) return;
-    fetch(`${BASE_URL}/api/food_rating_summary/${foodId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/food_rating_summary/${foodId}/`)
       .then(r => r.json()).then(setSummary).catch(() => {});
 
-    fetch(`${BASE_URL}/api/reviews/${foodId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/${foodId}/`)
       .then(r => r.json()).then(setReviews).catch(() => {});
   }, [foodId]);
 
@@ -160,7 +159,7 @@ const FoodDetail = () => {
   const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/foods/${id}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/foods/${id}/`)
       .then(res => res.json())
       .then(data => {
         setFood(data.food || data);
@@ -173,7 +172,7 @@ const FoodDetail = () => {
     if (!userId) { navigate("/login"); return; }
     setAddingToCart(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/cart/add/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/add/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, foodId: id }),
@@ -206,7 +205,7 @@ const FoodDetail = () => {
     </PublicLayout>
   );
 
-  const imageUrl = food.image?.startsWith("http") ? food.image : `${BASE_URL}/${food.image}`;
+  const imageUrl = food.image?.startsWith("http") ? food.image : `${import.meta.env.VITE_BACKEND_URL}${food.image}`;
 
   return (
     <PublicLayout>

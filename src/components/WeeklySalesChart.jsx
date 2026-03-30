@@ -5,7 +5,7 @@ const WeeklySalesChart = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/weekly_sales_summary/')  // ✅ changed API
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/weekly_sales_summary/`)  // ✅ changed API
             .then(res => res.json())
             .then(setData);
     }, []);

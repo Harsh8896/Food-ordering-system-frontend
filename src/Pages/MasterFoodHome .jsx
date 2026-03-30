@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import PublicLayout from "../components/PublicLayout";
 import { FaStore, FaSearch, FaFire } from "react-icons/fa";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const MasterFoodHome = () => {
   const [foods, setFoods] = useState([]);
@@ -14,7 +13,7 @@ const MasterFoodHome = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/master-foods/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/master-foods/`)
       .then(res => res.json())
       .then(data => {
         setFoods(data);

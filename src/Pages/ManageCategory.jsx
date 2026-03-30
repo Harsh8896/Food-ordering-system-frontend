@@ -23,7 +23,7 @@ const ManageCategory = () => {
 
   useEffect(() => {
     // Sirf is restaurant ki categories fetch karo
-    fetch(`http://127.0.0.1:8000/api/categories/?restaurant_id=${restaurantId}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/categories/?restaurant_id=${restaurantId}`)
       .then(res => res.json())
       .then(data => {
         setCategories(data);
@@ -33,7 +33,7 @@ const ManageCategory = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
-      fetch(`http://127.0.0.1:8000/api/category/${id}/`, { method: 'DELETE' })
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/${id}/`, { method: 'DELETE' })
         .then(res => res.json())
         .then(data => {
           toast.success(data.message);

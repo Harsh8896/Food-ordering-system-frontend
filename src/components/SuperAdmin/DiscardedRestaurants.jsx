@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./superadmin.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 export default function DiscardedRestaurants({ showToast }) {
   const [discarded, setDiscarded] = useState([]);
@@ -9,7 +8,7 @@ export default function DiscardedRestaurants({ showToast }) {
 
   const fetchDiscarded = async () => {
     try {
-      const res  = await fetch(`${BASE_URL}/api/restaurants/`);
+      const res  = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/`);
       const data = await res.json();
       // Sirf discarded restaurants filter karo
       setDiscarded(
@@ -33,7 +32,7 @@ export default function DiscardedRestaurants({ showToast }) {
 
   const handleRestore = async (id) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${id}/discard/`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${id}/discard/`, { method: "PUT" });
       if (res.ok) {
         showToast?.("Restaurant restored ✅", "success");
         fetchDiscarded();
@@ -43,7 +42,7 @@ export default function DiscardedRestaurants({ showToast }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`${BASE_URL}/api/restaurants/${id}/`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/restaurants/${id}/`, { method: "DELETE" });
       if (res.ok) {
         showToast?.("Permanently deleted 🗑️", "error");
         fetchDiscarded();

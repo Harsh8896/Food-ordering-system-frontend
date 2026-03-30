@@ -5,7 +5,7 @@ const WeeklyUserChart = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/weekly_user_registrations/')
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/weekly_user_registrations/`)
             .then(res => res.json())
             .then(setData);
     }, []);

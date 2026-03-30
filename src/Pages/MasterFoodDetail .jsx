@@ -9,7 +9,6 @@ import {
   FaClock, FaArrowLeft
 } from "react-icons/fa";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const RESTAURANT_COLORS = [
   { bg: "linear-gradient(135deg, #ff6b35, #f7931e)", btn: "#ff6b35" },
@@ -127,7 +126,7 @@ const MasterFoodDetail = () => {
   const [addingToCart, setAddingToCart] = useState(null);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/api/master-foods/${id}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/master-foods/${id}/`)
       .then(res => res.json())
       .then(data => {
         setFood(data);
@@ -148,7 +147,7 @@ const MasterFoodDetail = () => {
     
     setAddingToCart(restaurantId);
     try {
-        const res = await fetch(`${BASE_URL}/api/cart/add/`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/add/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId, foodId: menuItemId }),

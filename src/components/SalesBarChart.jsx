@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContaine
 const SalesBarChart = () => {
     const [data, setData] = useState([]);
     useEffect(() => {
-        fetch('http://127.0.0.1:8000/api/monthly_sales_summary/').then(res => res.json()).then(setData);
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/monthly_sales_summary/`).then(res => res.json()).then(setData);
     }, []);
 
     return (

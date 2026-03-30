@@ -22,7 +22,7 @@ const OrderDetail = () => {
     }
 
     // Fetch order items
-    fetch(`http://127.0.0.1:8000/api/orders/by_order_number/${order_number}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/by_order_number/${order_number}/`)
       .then((res) => res.json())
       .then((data) => {
         setOrderItems(data);
@@ -36,7 +36,7 @@ const OrderDetail = () => {
       });
 
     // Fetch address
-    fetch(`http://127.0.0.1:8000/api/order_address/${order_number}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order_address/${order_number}/`)
       .then((res) => res.json())
       .then((data) => {
         setOrderAddress(data);
@@ -57,7 +57,7 @@ const OrderDetail = () => {
                 <div className="row g-0">
                   <div className="col-md-4">
                     <img
-                      src={`http://127.0.0.1:8000${item.food.image}`}
+                      src={`${import.meta.env.VITE_BACKEND_URL}${item.food.image}`}
                       alt={item.food.item_name}
                       className="img-fluid rounded-start"
                       style={{ width: "100%", height: "220px", objectFit: "cover" }}
@@ -127,7 +127,7 @@ const OrderDetail = () => {
                 </h5>
 
 <a 
-  href={`http://127.0.0.1:8000/api/invoice/${order_number}/`} 
+  href={`${import.meta.env.VITE_BACKEND_URL}/api/invoice/${order_number}/`} 
   target="_blank" 
   className="btn btn-primary w-100 my-2"
 >

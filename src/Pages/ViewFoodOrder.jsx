@@ -14,7 +14,7 @@ const ViewFoodOrder = () => {
 
     // ── Fetch order data ──
     const fetchOrderData = useCallback(() => {
-        fetch(`http://127.0.0.1:8000/api/view-order-detail/${order_number}/`)
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/view-order-detail/${order_number}/`)
             .then(res => {
                 if (!res.ok) throw new Error("Order not found");
                 return res.json();
@@ -77,7 +77,7 @@ const ViewFoodOrder = () => {
         setUpdating(true);
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/update_order_status/', {
+            const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/update_order_status/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -162,7 +162,7 @@ const ViewFoodOrder = () => {
                                 {foods.map((item, index) => (
                                     <tr key={index}>
                                         <td>
-                                            <img src={`http://127.0.0.1:8000${item.image}`} width="60" alt="food" style={{ borderRadius: '8px' }} />
+                                            <img src={`${import.meta.env.VITE_BACKEND_URL}${item.image}`} width="60" alt="food" style={{ borderRadius: '8px' }} />
                                         </td>
                                         <td>{item.item_name}</td>
                                         <td>₹{item.item_price}</td>

@@ -40,7 +40,7 @@ const TrackOrder = () => {
     setLoading(true);
     setSearched(false);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/track_order/${orderNum}`);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/track_order/${orderNum}`);
       const data = await res.json();
       if (res.ok) {
         setTrackingData(data);

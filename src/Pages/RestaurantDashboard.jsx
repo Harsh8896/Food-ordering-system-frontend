@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import RestaurantLayout from '../components/RestaurantLayout';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
-
 const RestaurantDashboard = () => {
   const restaurantId = localStorage.getItem('restaurantId');
   const restaurantName = localStorage.getItem('restaurantName');
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/dashboard_metrics/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/`)
       .then(res => res.json())
       .then(data => setStats(data));
   }, []);

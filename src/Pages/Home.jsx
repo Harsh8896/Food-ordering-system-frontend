@@ -4,8 +4,6 @@ import "../styles/home.css"
 import { Link } from 'react-router-dom'
 import { FaStar, FaStarHalfAlt, FaRegStar, FaChevronRight, FaStore, FaCrown } from 'react-icons/fa'
 
-const BASE_URL = "http://127.0.0.1:8000"
-
 // ⭐ Star renderer
 const renderStars = (avg, size = 14) => {
 return [1, 2, 3, 4, 5].map(i => {
@@ -26,12 +24,13 @@ const [hoveredId, setHoveredId] = useState(null)
 const [activeTab, setActiveTab] = useState('all')
 
 useEffect(() => {
-fetch(`${BASE_URL}/api/home-feed/`)
-.then(res => res.json())
-.then(data => {
-setRestaurantFoods(data.restaurant_foods || [])
-setMasterFoods(data.master_foods || [])
-})
+  fetch(`${import.meta.env.VITE_BACKEND_URL}/api/home-feed/`)
+    .then(res => res.json())
+    .then(data => {
+      setRestaurantFoods(data.restaurant_foods || [])
+      setMasterFoods(data.master_foods || [])
+    })
+    .catch(err => console.error("Error:", err))
 }, [])
 
 const foodCardStyle = (isHovered) => ({
@@ -107,7 +106,7 @@ return ( <PublicLayout>
                   {/* IMAGE */}
                   <div className='position-relative' style={{ height: '200px', overflow: 'hidden', borderRadius: '25px 25px 0 0' }}>
                     <img
-                      src={item.image ? `${BASE_URL}${item.image}` : "/img/no-image.png"}
+                      src={item.image ? `${import.meta.env.VITE_BACKEND_URL}${item.image}` : "/img/no-image.png"}
                       alt={item.item_name}
                       style={{
                         width: '100%',
@@ -187,7 +186,7 @@ return ( <PublicLayout>
                   {/* IMAGE */}
                   <div className='position-relative' style={{ height: '200px', overflow: 'hidden', borderRadius: '25px 25px 0 0' }}>
                     <img
-                      src={item.image ? `${BASE_URL}${item.image}` : "/img/no-image.png"}
+                      src={item.image ? `${import.meta.env.VITE_BACKEND_URL}${item.image}` : "/img/no-image.png"}
                       alt={item.item_name}
                       style={{
                         width: '100%',
