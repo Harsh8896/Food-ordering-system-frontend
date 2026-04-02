@@ -301,7 +301,7 @@ function Cart() {
               <h5 style={{ color: '#64748b', fontWeight: '600' }}>Your cart is empty</h5>
               <p style={{ color: '#94a3b8', fontSize: '14px' }}>Add some delicious food to get started!</p>
               <button
-                onClick={() => navigate("/foods")}
+                onClick={() => navigate("/food-menu")}
                 style={{
                   marginTop: '16px', padding: '12px 28px',
                   background: '#f59e0b', border: 'none',
@@ -321,7 +321,7 @@ function Cart() {
                   <div className="cart-card" key={item.id}>
                     <div className="d-flex">
                       <img
-                        src={`${import.meta.env.VITE_BACKEND_URL}${item.food.image}`}
+                        src={item.food.image}
                         className="cart-img"
                         alt={item.food.item_name}
                       />

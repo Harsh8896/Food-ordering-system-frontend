@@ -8,6 +8,8 @@ const PublicLayout = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userName, setUserName] = useState("")
   const [hasActiveOrders, setHasActiveOrders] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const { cartCount, setCartCount } = useCart()
   const location = useLocation()
@@ -39,11 +41,28 @@ const PublicLayout = ({ children }) => {
   useEffect(() => {
     if (userId) {
       setIsLoggedIn(true)
-      setUserName(name) // ✅ FIX
+      setUserName(name)
       fetchCartCount()
       checkActiveOrders()
     }
   }, [userId])
+
+  // Route change hone par menu aur dropdown band karo
+  useEffect(() => {
+    setMenuOpen(false)
+    setDropdownOpen(false)
+  }, [location.pathname])
+
+  // Bahar click karne par dropdown band karo
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.user-dropdown-wrapper')) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleLogout = () => {
     localStorage.removeItem("userId")
@@ -51,109 +70,135 @@ const PublicLayout = ({ children }) => {
     setIsLoggedIn(false)
     setCartCount(0)
     setHasActiveOrders(false)
+    setDropdownOpen(false)
     navigate("/login")
   }
 
   return (
-    <div>
+    <div className="site-wrapper">
 
-      {/* 🔥 NAVBAR */}
-      <nav className="navbar navbar-expand-lg custom-navbar">
-        <div className="container">
+      {/* NAVBAR */}
+      <nav className="custom-navbar">
+        <div className="nav-container">
 
-          <Link className="navbar-brand brand-logo" to="/">
-            <FaUtensils className="me-2" />
+          {/* Brand */}
+          <Link className="brand-logo" to="/" onClick={() => setMenuOpen(false)}>
+            <FaUtensils className="brand-icon" />
             Foodie
           </Link>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+          {/* Right side — cart + hamburger (mobile only) */}
+          <div className="nav-right-mobile">
+            <Link className="cart-icon-btn" to="/cart">
+              <FaShoppingCart size={20} />
+              {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+            </Link>
+            <button
+              className={`hamburger ${menuOpen ? 'open' : ''}`}
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span /><span /><span />
+            </button>
+          </div>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ms-auto align-items-center">
+          {/* Nav Links */}
+          <div className={`nav-menu ${menuOpen ? 'nav-menu--open' : ''}`}>
 
-              <li className="nav-item mx-2">
-                <Link className={`nav-link ${location.pathname === '/' ? 'active-link' : ''}`} to="/">
-                  Home
-                </Link>
-              </li>
+            <Link
+              className={`nav-link ${location.pathname === '/' ? 'nav-link--active' : ''}`}
+              to="/"
+            >
+              Home
+            </Link>
 
-              <li className="nav-item mx-2">
-                <Link className={`nav-link ${location.pathname === '/food-menu' ? 'active-link' : ''}`} to="/food-menu">
-                  Menu
-                </Link>
-              </li>
+            <Link
+              className={`nav-link ${location.pathname === '/food-menu' ? 'nav-link--active' : ''}`}
+              to="/food-menu"
+            >
+              Menu
+            </Link>
 
-              {isLoggedIn && hasActiveOrders && (
-                <li className="nav-item mx-2">
-                  <Link className={`nav-link ${location.pathname === '/my-orders' ? 'active-link' : ''}`} to="/my-orders">
-                    Orders
-                  </Link>
-                </li>
-              )}
+            {isLoggedIn && hasActiveOrders && (
+              <Link
+                className={`nav-link ${location.pathname === '/my-orders' ? 'nav-link--active' : ''}`}
+                to="/my-orders"
+              >
+                My Orders
+              </Link>
+            )}
 
-              {/* 🛒 CART */}
-              <li className="nav-item mx-2">
-                <Link className="nav-link cart-icon" to="/cart">
-                  <FaShoppingCart />
-                  {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-                </Link>
-              </li>
+            {/* Cart — desktop only */}
+            <Link className="cart-icon-btn cart-desktop" to="/cart">
+              <FaShoppingCart size={20} />
+              {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+            </Link>
 
-              {/* 🔐 AUTH */}
-              {!isLoggedIn ? (
-                <>
-                  <li className="nav-item mx-2">
-                    <Link className="btn btn-outline-light btn-sm" to="/login">Login</Link>
-                  </li>
-                  <li className="nav-item mx-2">
-                    <Link className="btn btn-warning btn-sm" to="/register">Register</Link>
-                  </li>
-                  <li className="nav-item mx-2">
-                    <Link className="btn btn-warning btn-sm" to="/admin-login">Admin</Link>
-                  </li>
-                </>
-              ) : (
-                <li className="nav-item dropdown mx-2">
-                  <a
-                    className="nav-link dropdown-toggle user-dropdown"
-                    href="#"
-                    data-bs-toggle="dropdown"
-                  >
-                    👋 {userName}
-                  </a>
+            {/* Auth */}
+            {!isLoggedIn ? (
+              <div className="auth-btns">
+                <Link className="btn-outline" to="/login">Login</Link>
+                <Link className="btn-fill" to="/register">Register</Link>
+                <Link className="btn-fill" to="/admin-login">Admin</Link>
+              </div>
+            ) : (
+              <div className="user-dropdown-wrapper">
+                <button
+                  className="user-btn"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  👋 {userName?.split(" ")[0]}
+                  <span className={`dropdown-arrow ${dropdownOpen ? 'arrow-up' : ''}`}>▾</span>
+                </button>
 
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
-                    <li><Link className="dropdown-item" to="/change-password">Settings</Link></li>
-                    <li><hr /></li>
-                    <li>
-                      <button className="dropdown-item text-danger" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-              )}
+                {dropdownOpen && (
+                  <div className="user-dropdown-menu">
+                    <Link
+                      className="dropdown-item"
+                      to="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      👤 Profile
+                    </Link>
+                    <Link
+                      className="dropdown-item"
+                      to="/change-password"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      ⚙️ Settings
+                    </Link>
+                    <hr className="dropdown-divider" />
+                    <button
+                      className="dropdown-item danger"
+                      onClick={handleLogout}
+                    >
+                      🚪 Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
-            </ul>
           </div>
         </div>
+
+        {/* Mobile overlay */}
+        {menuOpen && (
+          <div className="nav-overlay" onClick={() => setMenuOpen(false)} />
+        )}
       </nav>
 
       {/* CONTENT */}
-      <div>{children}</div>
+      <main className="main-content">{children}</main>
 
-      {/* 🔥 FOOTER */}
+      {/* FOOTER */}
       <footer className="footer">
-        <div className="container text-center">
-          <p>© 2026 Food Ordering System | All Rights Reserved</p>
+        <div className="footer-container">
+          <div className="footer-brand">
+            <FaUtensils className="me-2" />
+            Foodie
+          </div>
+          <p className="footer-copy">© 2026 Food Ordering System | All Rights Reserved</p>
         </div>
       </footer>
 

@@ -27,8 +27,8 @@ const AdminDashboard = () => {
         const rid = localStorage.getItem('restaurantId');
         const validRid = rid && rid !== 'null' ? rid : null;
         const url = validRid
-            ? `${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/?restaurant_id=${validRid}`
-            : `${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/`;
+            ? `${import.meta.env.VITE_BACKEND_URL}/api/dashboard_metrics/?restaurant_id=${validRid}`
+            : `${import.meta.env.VITE_BACKEND_URL}/api/dashboard_metrics/`;
 
         fetch(url)
             .then(res => res.json())

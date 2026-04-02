@@ -7,7 +7,7 @@ const RestaurantDashboard = () => {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/dashboard_metrics/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard_metrics/`)
       .then(res => res.json())
       .then(data => setStats(data));
   }, []);

@@ -90,9 +90,7 @@ const ViewFoodOrder = () => {
 
             if (result.message) {
                 toast.success(result.message);
-                // ✅ page reload nahi — sirf data refetch karo
                 fetchOrderData();
-                // remark field clear karo
                 e.target.remark.value = "";
             } else {
                 toast.error(result.error || "Failed to update status");
@@ -162,7 +160,7 @@ const ViewFoodOrder = () => {
                                 {foods.map((item, index) => (
                                     <tr key={index}>
                                         <td>
-                                            <img src={`${import.meta.env.VITE_BACKEND_URL}${item.image}`} width="60" alt="food" style={{ borderRadius: '8px' }} />
+                                            <img src={item.image} width="60" alt="food" style={{ borderRadius: '8px' }} />
                                         </td>
                                         <td>{item.item_name}</td>
                                         <td>₹{item.item_price}</td>

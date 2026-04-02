@@ -12,7 +12,7 @@ const ManageFood = () => {
 
   useEffect(() => {
     // Sirf is restaurant ke foods fetch karo
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/food/?restaurant_id=${restaurantId}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/foods/?restaurant_id=${restaurantId}`)
       .then(res => res.json())
       .then(data => {
         setFoods(data);
