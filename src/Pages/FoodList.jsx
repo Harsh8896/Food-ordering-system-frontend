@@ -123,7 +123,7 @@ const FoodList = () => {
         type: 'restaurant',
         name: f.item_name,
         description: f.item_description,
-        image: `${import.meta.env.VITE_BACKEND_URL}${f.image}`,
+        image: f.image,
         price: parseFloat(f.item_price) || 0,
         category: f.category_name || 'Other',
         restaurant_name: f.restaurant_name,

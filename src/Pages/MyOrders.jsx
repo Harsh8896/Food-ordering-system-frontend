@@ -40,13 +40,13 @@ const MyOrders = () => {
   }, [userId, navigate]);
 
   const fetchOrders = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/orders/${userId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${userId}/`)
       .then(res => res.json())
       .then(data => setOrders(data));
   };
 
   const fetchDeliveredFoods = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/delivered-orders/${userId}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/delivered-orders/${userId}/`)
       .then(res => res.json())
       .then(data => setDeliveredFoods(data));
   };
@@ -80,14 +80,14 @@ const MyOrders = () => {
       let res;
       if (isEditing && activeReview.my_review_id) {
         // Edit existing review
-        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/review_edit/${activeReview.my_review_id}/`, {
+        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/review_edit/${activeReview.my_review_id}/`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ rating, comment }),
         });
       } else {
         // New review
-        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/reviews/add/${activeReview.food_id}/`, {
+        res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/add/${activeReview.food_id}/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_id: userId, rating, comment }),
@@ -395,9 +395,12 @@ const MyOrders = () => {
 
                               {/* Food info */}
                               <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
-                                {food.food_image && (
-                                  <img src={food.food_image} alt={food.food_name}
-                                    style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover", flexShrink: 0 }} />
+                                {food.image && (
+                                  <img
+                                    src={food.image}
+                                    alt={food.food_name}
+                                    style={{ width: "40px", height: "40px", borderRadius: "10px", objectFit: "cover" }}
+                                  />
                                 )}
                                 <div style={{ minWidth: 0 }}>
                                   <p style={{
@@ -471,8 +474,8 @@ const MyOrders = () => {
 
             {/* Food info */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
-              {activeReview.food_image && (
-                <img src={activeReview.food_image} alt={activeReview.food_name}
+              {activeReview.image  && (
+                <img src={activeReview.image} alt={activeReview.food_name}
                   style={{ width: "56px", height: "56px", borderRadius: "14px", objectFit: "cover" }} />
               )}
               <div>

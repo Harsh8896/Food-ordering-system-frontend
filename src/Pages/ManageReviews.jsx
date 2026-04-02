@@ -10,7 +10,7 @@ const ManageReviews = () => {
 
   useEffect(() => {
     if (!adminUser) { navigate('/admin-login'); return; }
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/all-reviews/`)
       .then(res => res.json())
       .then(data => setReviews(data));
   }, []);

@@ -19,8 +19,19 @@ const AddFood = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ Validation
+    if (!formData.category) {
+      toast.error("Please select a category");
+      return;
+    }
+    if (!formData.image) {
+      toast.error("Please select an image");
+      return;
+    }
+
     const data = new FormData();
-    data.append("restaurant", restaurantId); // ← restaurant_id attach kiya
+    data.append("restaurant", restaurantId);
     data.append("category", formData.category);
     data.append("item_name", formData.item_name);
     data.append("item_price", formData.item_price);
@@ -48,12 +59,11 @@ const AddFood = () => {
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error("error", error);
+      toast.error("Server error: " + error.message);
     }
   };
 
   useEffect(() => {
-    // Sirf is restaurant ki categories fetch karo
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/categories/?restaurant_id=${restaurantId}`)
       .then(res => res.json())
       .then(data => {
@@ -69,10 +79,17 @@ const AddFood = () => {
     }));
   };
 
+  // ✅ File size check
   const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 5 * 1024 * 1024) {
+      toast.error("Image 5MB se badi nahi honi chahiye!");
+      e.target.value = "";
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
-      image: e.target.files[0],
+      image: file,
     }));
   };
 
@@ -177,6 +194,7 @@ const AddFood = () => {
                   onChange={handleFileChange}
                   accept="image/*"
                 />
+                <small className="text-muted">Max size: 5MB</small>
               </div>
 
               <button type="submit" className="btn btn-primary w-100 mt-3">
