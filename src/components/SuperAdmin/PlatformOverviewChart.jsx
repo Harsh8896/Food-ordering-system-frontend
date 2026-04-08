@@ -21,8 +21,7 @@ function Donut({ segments, size = 90, stroke = 14 }) {
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
       {segments.map((seg, i) => {
         const dash = (seg.value / total) * circ;
-        const el = (
-          <circle
+        const el = (          <circle
             key={i}
             cx={size / 2}  cy={size / 2}  r={r}
             fill="none"
