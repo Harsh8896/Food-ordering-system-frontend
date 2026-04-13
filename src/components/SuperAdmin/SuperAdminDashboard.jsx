@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./superadmin.css";
 
 // Components
@@ -60,6 +61,7 @@ function Toast({ toast }) {
 // ── Dashboard ──
 function DashboardHome({ restaurants = [], users = [], orders = [] }) {
   const [restaurantData, setRestaurantData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRestaurantData();
@@ -102,6 +104,10 @@ function DashboardHome({ restaurants = [], users = [], orders = [] }) {
     }
   };
 
+  const goToRestaurantDetail = (restaurantId) => {
+    navigate(`/restaurant/${restaurantId}`);
+  };
+
   return (
     <>
       <div className="sa-stats-grid">
@@ -131,9 +137,33 @@ function DashboardHome({ restaurants = [], users = [], orders = [] }) {
 
           <tbody>
             {restaurantData.map((r, index) => (
-              <tr key={r.id}>
+              <tr
+                key={r.id}
+                className="sa-clickable-row"
+                role="button"
+                tabIndex={0}
+                onClick={() => goToRestaurantDetail(r.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    goToRestaurantDetail(r.id);
+                  }
+                }}
+                aria-label={`Open ${r.name} details`}
+              >
                 <td><strong>#{index + 1}</strong></td>
-                <td><strong>{r.name}</strong></td>
+                <td>
+                  <button
+                    type="button"
+                    className="sa-row-link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToRestaurantDetail(r.id);
+                    }}
+                  >
+                    <strong>{r.name}</strong>
+                  </button>
+                </td>
                 <td>{r.orders}</td>
                 <td><strong>₹{r.revenue}</strong></td>
               </tr>

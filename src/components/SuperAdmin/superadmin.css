@@ -205,6 +205,28 @@ body { font-family: 'Nunito', sans-serif !important; background: var(--bg); colo
 .sa-table tbody tr { transition: .15s; }
 .sa-table tbody tr:hover { background: rgba(245,166,35,.04); }
 
+.sa-clickable-row { cursor: pointer; }
+
+.sa-row-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sa-row-link:hover {
+  color: var(--gold-dark);
+}
+
+.sa-row-link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* ═══════════ REST CELL ═══════════ */
 .sa-rest-cell   { display: flex; align-items: center; gap: 12px; }
 .sa-rest-avatar {

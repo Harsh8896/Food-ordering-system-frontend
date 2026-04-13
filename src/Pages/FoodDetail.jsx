@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { FaCartArrowDown, FaStore, FaStar, FaRegStar } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
@@ -33,6 +33,33 @@ const RatingBar = ({ star, count, total }) => {
   );
 };
 
+const buildReviewSummary = (list = []) => {
+  const total_reviews = list.length;
+  if (!total_reviews) {
+    return {
+      average: 0,
+      total_reviews: 0,
+      breakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    };
+  }
+
+  const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  let sum = 0;
+
+  list.forEach((r) => {
+    const rating = Math.max(1, Math.min(5, Number(r.rating) || 0));
+    const rounded = Math.round(rating);
+    breakdown[rounded] += 1;
+    sum += rating;
+  });
+
+  return {
+    average: (sum / total_reviews).toFixed(1),
+    total_reviews,
+    breakdown,
+  };
+};
+
 // ── Single review card ──
 const ReviewCard = ({ review }) => {
   const initials = review.user_name
@@ -54,7 +81,6 @@ const ReviewCard = ({ review }) => {
       borderRadius: 12, padding: "1rem 1.25rem", marginBottom: 12
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-        {/* Avatar circle */}
         <div style={{
           width: 38, height: 38, borderRadius: "50%",
           background: "#eff6ff", display: "flex", alignItems: "center",
@@ -79,19 +105,25 @@ const ReviewCard = ({ review }) => {
 };
 
 // ── Review Summary Section ──
-const ReviewSection = ({ foodId }) => {
+const ReviewSection = ({ foodId, staticSummary = null, staticReviews = [] }) => {
   const [summary, setSummary] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
+    if (staticSummary || staticReviews.length > 0) {
+      setSummary(staticSummary || buildReviewSummary(staticReviews));
+      setReviews(staticReviews);
+      return;
+    }
+
     if (!foodId) return;
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/food_rating_summary/${foodId}/`)
       .then(r => r.json()).then(setSummary).catch(() => {});
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/${foodId}/`)
       .then(r => r.json()).then(setReviews).catch(() => {});
-  }, [foodId]);
+  }, [foodId, staticSummary, staticReviews]);
 
   if (!summary || summary.total_reviews === 0) return (
     <div style={{ borderTop: "0.5px solid #e5e7eb", marginTop: "2rem", paddingTop: "1.5rem" }}>
@@ -106,16 +138,13 @@ const ReviewSection = ({ foodId }) => {
     <div style={{ borderTop: "0.5px solid #e5e7eb", marginTop: "2rem", paddingTop: "1.5rem" }}>
       <h5 style={{ fontWeight: 500, fontSize: 18, marginBottom: "1.25rem" }}>Customer reviews</h5>
 
-      {/* Rating overview */}
       <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "2rem", alignItems: "center", marginBottom: "1.5rem" }}>
-        {/* Big number */}
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 52, fontWeight: 500, lineHeight: 1 }}>{summary.average}</div>
           <div style={{ margin: "6px 0 4px" }}><Stars rating={summary.average} size={16} /></div>
           <div style={{ fontSize: 13, color: "#6b7280" }}>{summary.total_reviews} reviews</div>
         </div>
 
-        {/* Breakdown bars */}
         <div>
           {[5, 4, 3, 2, 1].map(star => (
             <RatingBar
@@ -128,10 +157,8 @@ const ReviewSection = ({ foodId }) => {
         </div>
       </div>
 
-      {/* Review cards */}
       {displayed.map(review => <ReviewCard key={review.id} review={review} />)}
 
-      {/* Show more / less toggle */}
       {reviews.length > 3 && (
         <button
           onClick={() => setShowAll(!showAll)}
@@ -150,15 +177,60 @@ const ReviewSection = ({ foodId }) => {
 
 // ── Main FoodDetail Component ──
 const FoodDetail = () => {
-  const { id } = useParams();
+  const { id, productId, restaurantId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const userId = localStorage.getItem("userId");
+  const isComparisonFlow = Boolean(productId && restaurantId);
 
   const [food, setFood] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [staticReviews, setStaticReviews] = useState([]);
+  const [staticSummary, setStaticSummary] = useState(null);
 
   useEffect(() => {
+    if (isComparisonFlow) {
+      const selectedProduct = location.state?.selectedProduct || {};
+      const selectedRestaurant = location.state?.selectedRestaurant || {};
+
+      const productData = {
+        id: selectedRestaurant.food_id || selectedProduct.id || productId,
+        item_name: selectedProduct.name || "Selected Dish",
+        item_description: selectedProduct.description || "Tasty dish from selected restaurant.",
+        item_price: selectedRestaurant.price || selectedProduct.price || 0,
+        image: selectedProduct.image || "",
+        restaurant_name: selectedRestaurant.restaurant_name || `Restaurant #${restaurantId}`,
+        is_available: selectedRestaurant.is_available !== false,
+      };
+
+      setFood(productData);
+
+      // ✅ Real food_id se API se reviews fetch karo — no hardcoded data
+      const realFoodId = selectedRestaurant.food_id || selectedProduct.id || productId;
+
+      if (realFoodId) {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/reviews/${realFoodId}/`)
+          .then(r => r.json())
+          .then(reviews => {
+            const reviewList = Array.isArray(reviews) ? reviews : [];
+            setStaticReviews(reviewList);
+            setStaticSummary(buildReviewSummary(reviewList));
+          })
+          .catch(() => {
+            setStaticReviews([]);
+            setStaticSummary(buildReviewSummary([]));
+          });
+      } else {
+        setStaticReviews([]);
+        setStaticSummary(buildReviewSummary([]));
+      }
+
+      setLoading(false);
+      return;
+    }
+
+    // Normal flow
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/foods/${id}/`)
       .then(res => res.json())
       .then(data => {
@@ -166,16 +238,21 @@ const FoodDetail = () => {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [id]);
+  }, [id, productId, restaurantId, isComparisonFlow, location.state]);
 
   const handleAddToCart = async () => {
     if (!userId) { navigate("/login"); return; }
+
+    const targetFoodId = isComparisonFlow
+      ? (food?.id || productId)
+      : id;
+
     setAddingToCart(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/add/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, foodId: id }),
+        body: JSON.stringify({ userId, foodId: targetFoodId }),
       });
       const result = await res.json();
       if (res.ok) {
@@ -205,7 +282,9 @@ const FoodDetail = () => {
     </PublicLayout>
   );
 
-  const imageUrl = food.image?.startsWith("http") ? food.image : `${import.meta.env.VITE_BACKEND_URL}${food.image}`;
+  const imageUrl = food.image
+    ? (food.image.startsWith("http") ? food.image : `${import.meta.env.VITE_BACKEND_URL}${food.image}`)
+    : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80";
 
   return (
     <PublicLayout>
@@ -264,8 +343,12 @@ const FoodDetail = () => {
           </div>
         </div>
 
-        {/* ✅ Review Section — food id pass karo */}
-        <ReviewSection foodId={id} />
+        {/* ✅ Comparison flow mein bhi real food ID pass ho rahi hai */}
+        <ReviewSection
+          foodId={isComparisonFlow ? (food?.id || null) : id}
+          staticSummary={isComparisonFlow ? staticSummary : null}
+          staticReviews={isComparisonFlow ? staticReviews : []}
+        />
       </div>
     </PublicLayout>
   );

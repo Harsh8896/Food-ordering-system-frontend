@@ -36,6 +36,7 @@ import MyDeliveredOrders from "./Pages/MyDeliveredOrders";
 import MasterFoodHome from './Pages/MasterFoodHome '
 import MasterFoodDetail from './Pages/MasterFoodDetail '
 import SuperAdminDeshboard from './components/SuperAdmin/SuperAdminDashboard'
+import RestaurantDetail from './Pages/RestaurantDetail'
 
   const App = () => {
     return (
@@ -53,6 +54,7 @@ import SuperAdminDeshboard from './components/SuperAdmin/SuperAdminDashboard'
           <Route path='/register' element={<Register/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/food/:id' element={<FoodDetail/>}/>
+          <Route path='/product/:productId/:restaurantId' element={<FoodDetail/>}/>
           <Route path='/cart' element={<Cart/>}/>
           <Route path='/payment' element={<PaymentPage/>}/>
           <Route path='/my-orders' element={<MyOrders/>}/>
@@ -78,6 +80,7 @@ import SuperAdminDeshboard from './components/SuperAdmin/SuperAdminDashboard'
           <Route path="/my-orders" element={<MyDeliveredOrders />} /> 
 
           <Route path="/super-admin-deshboard" element={<SuperAdminDeshboard/>}/>
+          <Route path="/restaurant/:id" element={<RestaurantDetail/>}/>
 
           <Route path="/menu1" element={<MasterFoodHome />} />
           <Route path="/master-food/:id" element={<MasterFoodDetail />} />

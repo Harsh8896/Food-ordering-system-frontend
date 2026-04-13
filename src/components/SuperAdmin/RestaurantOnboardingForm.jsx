@@ -254,30 +254,7 @@ export default function RestaurantOnboardingForm({ onClose, showToast }) {
             />
           </div>
 
-          {/* Plan */}
-          <div style={styles.group}>
-            <label style={styles.label}>Subscription Plan</label>
-            <select
-              style={styles.input}
-              value={form.subscription_plan}
-              onChange={set("subscription_plan")}
-            >
-              <option>Basic</option>
-              <option>Standard</option>
-              <option>Premium</option>
-            </select>
-          </div>
-
-          {/* Expiry */}
-          <div style={styles.group}>
-            <label style={styles.label}>Subscription Expiry Date</label>
-            <input
-              type="date"
-              style={styles.input}
-              value={form.subscription_expiry}
-              onChange={set("subscription_expiry")}
-            />
-          </div>
+         
 
           {/* Buttons */}
           <div style={styles.footer}>
