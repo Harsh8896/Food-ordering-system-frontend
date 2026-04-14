@@ -1,0 +1,117 @@
+.restaurant-detail-page {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+.restaurant-detail-header h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1a2040;
+}
+
+.restaurant-detail-header p {
+  color: #6d7692;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.restaurant-detail-section {
+  margin-bottom: 1.6rem;
+}
+
+.restaurant-detail-section-title {
+  margin: 0 0 0.9rem;
+  color: #1a2040;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.restaurant-detail-card {
+  border: 1px solid #e8ecf4;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(26, 32, 64, 0.08);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.restaurant-detail-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(26, 32, 64, 0.13);
+}
+
+.restaurant-detail-card .card-body {
+  padding: 1.1rem 1.1rem 1rem;
+}
+
+.restaurant-detail-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.restaurant-detail-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.restaurant-detail-icon.sales {
+  background: rgba(245, 166, 35, 0.16);
+  color: #d4891a;
+}
+
+.restaurant-detail-icon.orders {
+  background: rgba(45, 156, 219, 0.16);
+  color: #2d9cdb;
+}
+
+.restaurant-detail-icon.platform {
+  background: rgba(155, 81, 224, 0.16);
+  color: #9b51e0;
+}
+
+.restaurant-detail-chip {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.restaurant-detail-chip.sales {
+  background: rgba(245, 166, 35, 0.14);
+  color: #d4891a;
+}
+
+.restaurant-detail-chip.orders {
+  background: rgba(45, 156, 219, 0.14);
+  color: #2d9cdb;
+}
+
+.restaurant-detail-chip.platform {
+  background: rgba(155, 81, 224, 0.14);
+  color: #9b51e0;
+}
+
+.restaurant-detail-title {
+  margin-bottom: 0.4rem;
+  color: #8a94b2;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.restaurant-detail-value {
+  margin: 0;
+  color: #1a2040;
+  font-weight: 900;
+  font-size: 1.45rem;
+  line-height: 1.25;
+}

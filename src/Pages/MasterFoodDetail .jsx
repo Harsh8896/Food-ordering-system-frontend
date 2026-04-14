@@ -18,6 +18,23 @@ const RESTAURANT_COLORS = [
   { bg: "linear-gradient(135deg, #b7410e, #e74c3c)", btn: "#b7410e" },
 ];
 
+const getDummyRestaurantReviews = (restaurantName = "Restaurant") => [
+  {
+    id: `${restaurantName}-1`,
+    user_name: "Aman",
+    rating: 5,
+    comment: `${restaurantName} se order kiya tha, bahut tasty!`,
+    created_at: "2026-04-09T09:30:00.000Z",
+  },
+  {
+    id: `${restaurantName}-2`,
+    user_name: "Sneha",
+    rating: 4,
+    comment: "Packaging achhi thi, delivery bhi fast.",
+    created_at: "2026-04-08T16:10:00.000Z",
+  },
+];
+
 const renderStars = (avg, size = 14) => {
   return [1, 2, 3, 4, 5].map(i => {
     const filled = i <= Math.floor(avg);
@@ -123,7 +140,7 @@ const MasterFoodDetail = () => {
   const [food, setFood] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [addingToCart, setAddingToCart] = useState(null);
+  const [openingDetail, setOpeningDetail] = useState(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/master-foods/${id}/`)
@@ -136,35 +153,29 @@ const MasterFoodDetail = () => {
       .catch(() => setLoading(false));
   }, [id]);
 
-  const handleAddToCart = async (restaurantId, restaurantName, menuItemId) => {
-    if (!userId) { navigate("/login"); return; }
-    
-    // ✅ food_id null check
-    if (!menuItemId) {
-        toast.error("This item is not properly linked. Please contact support.");
-        return;
+  const handleOpenProductDetail = (restaurantData) => {
+    if (!userId) {
+      navigate("/login");
+      return;
     }
-    
-    setAddingToCart(restaurantId);
-    try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/add/`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId, foodId: menuItemId }),
-        });
-        const result = await res.json();
-        if (res.ok) {
-            toast.success(`Added from ${restaurantName}! 🎉`);
-            setTimeout(() => navigate("/cart"), 1500);
-        } else {
-            toast.error(result.message || "Something went wrong");
-        }
-    } catch {
-        toast.error("Server error");
-    } finally {
-        setAddingToCart(null);
-    }
-};
+
+    setOpeningDetail(restaurantData.restaurant_id);
+    navigate(`/product/${id}/${restaurantData.restaurant_id}`, {
+      state: {
+        selectedProduct: {
+          id,
+          name: food?.name,
+          image: food?.image,
+          description: food?.description,
+          category: food?.category,
+        },
+        selectedRestaurant: {
+          ...restaurantData,
+        },
+        reviews: getDummyRestaurantReviews(restaurantData.restaurant_name),
+      },
+    });
+  };
 
   if (loading) return (
     <PublicLayout>
@@ -415,11 +426,11 @@ const MasterFoodDetail = () => {
                           <button
                             className="order-btn"
                             style={{ background: colorScheme.btn }}
-                            onClick={() => handleAddToCart(r.restaurant_id, r.restaurant_name, r.food_id)}
-                            disabled={addingToCart === r.restaurant_id}
+                            onClick={() => handleOpenProductDetail(r)}
+                            disabled={openingDetail === r.restaurant_id}
                           >
-                            {addingToCart === r.restaurant_id ? (
-                              <><span className="spinner-border spinner-border-sm" /> Adding...</>
+                            {openingDetail === r.restaurant_id ? (
+                              <><span className="spinner-border spinner-border-sm" /> Opening...</>
                             ) : (
                               <><FaCartArrowDown size={16} /> Order Now</>
                             )}
