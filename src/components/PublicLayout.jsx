@@ -84,7 +84,7 @@ const PublicLayout = ({ children }) => {
           {/* Brand */}
           <Link className="brand-logo" to="/" onClick={() => setMenuOpen(false)}>
             <FaUtensils className="brand-icon" />
-            Foodie
+             ZaykaDrop
           </Link>
 
           {/* Right side — cart + hamburger (mobile only) */}
@@ -196,7 +196,7 @@ const PublicLayout = ({ children }) => {
         <div className="footer-container">
           <div className="footer-brand">
             <FaUtensils className="me-2" />
-            Foodie
+             ZaykaDrop
           </div>
           <p className="footer-copy">© 2026 Food Ordering System | All Rights Reserved</p>
         </div>
